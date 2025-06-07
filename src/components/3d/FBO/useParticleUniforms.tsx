@@ -445,6 +445,14 @@ export const useParticleUniforms = () => {
         step: 0.1,
         onChange: (v) => updateFloatUniforms("uMouseLength", v),
       },
+      uMousePos: {
+        value: new THREE.Vector3(),
+        label: "uMousePos",
+        min: 0,
+        max: 1,
+        step: 0.01,
+        onChange: (v) => updateFloatUniforms("uMousePos", v),
+      },
       uMouseScale: {
         value: 0.15,
         label: "uMouseScale",

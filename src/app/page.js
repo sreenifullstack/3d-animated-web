@@ -49,7 +49,7 @@ import { FboParticlesV2 } from "@/components/3d/FBO/FboParticlesV2";
 gsap.registerPlugin(useGSAP);
 gsap.registerPlugin(ScrollTrigger);
 
-import { Stats } from "@react-three/drei";
+import { OrbitControls, Stats } from "@react-three/drei";
 
 import {
   SectionProvider,
@@ -221,7 +221,7 @@ export default function Home() {
             <Stats />
             <AnimatedBlobScene />
             <MainScene />
-            {/* <OrbitControls /> */}
+            <OrbitControls />
             {/* <OrbitControls /> */}
           </Canvas>
         </div>

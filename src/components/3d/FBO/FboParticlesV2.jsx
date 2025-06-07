@@ -19,6 +19,8 @@ import {
 } from "./FlowFieldParticles";
 // import { useParticleUniforms } from "./useParticleUniforms";
 
+import AA from "@/components/3d/shaders/test.vert";
+
 import { useGPGPU } from "./useGPGPU";
 
 import {
@@ -236,87 +238,87 @@ const FboParticles = ({ width = 128 }) => {
     factoryRef.current && fboUniform && setView(true);
   }, [fboUniform, factoryRef, refs]);
 
-  useGSAP(() => {
-    if (
-      !isInView ||
-      !groupRef.current ||
-      !fboUniform ||
-      !SCENE_TRANSFORMS[currentScene]
-    )
-      return;
+  // useGSAP(() => {
+  //   if (
+  //     !isInView ||
+  //     !groupRef.current ||
+  //     !fboUniform ||
+  //     !SCENE_TRANSFORMS[currentScene]
+  //   )
+  //     return;
 
-    const { position, rotation, scale, delay, swap, texture } =
-      SCENE_TRANSFORMS[currentScene];
+  //   const { position, rotation, scale, delay, swap, texture } =
+  //     SCENE_TRANSFORMS[currentScene];
 
-    const p = groupRef.current.position.clone();
-    const r = groupRef.current.rotation.clone();
-    const s = groupRef.current.scale.clone();
+  //   const p = groupRef.current.position.clone();
+  //   const r = groupRef.current.rotation.clone();
+  //   const s = groupRef.current.scale.clone();
 
-    const tl = gsap.timeline({
-      delay: delay,
-      onComplete: () => {
-        // fboUniform.texturePosition1.value = textures[texture[1]];
-        // fboUniform.texturePosition2.value = textures[texture[0]];
-      },
-    });
+  //   const tl = gsap.timeline({
+  //     delay: delay,
+  //     onComplete: () => {
+  //       // fboUniform.texturePosition1.value = textures[texture[1]];
+  //       // fboUniform.texturePosition2.value = textures[texture[0]];
+  //     },
+  //   });
 
-    tl.to(
-      p,
-      {
-        x: position.x,
-        y: position.y,
-        z: position.z,
-        duration: 1.5,
-        ease: "power2.inOut",
-        onUpdate: () => groupRef.current.position.copy(p),
-      },
-      0
-    ); // start at 0
+  //   tl.to(
+  //     p,
+  //     {
+  //       x: position.x,
+  //       y: position.y,
+  //       z: position.z,
+  //       duration: 1.5,
+  //       ease: "power2.inOut",
+  //       onUpdate: () => groupRef.current.position.copy(p),
+  //     },
+  //     0
+  //   ); // start at 0
 
-    tl.to(
-      r,
-      {
-        x: rotation.x,
-        y: rotation.y,
-        z: rotation.z,
-        duration: 1.5,
-        ease: "power2.inOut",
-        onUpdate: () => groupRef.current.rotation.set(r.x, r.y, r.z),
-      },
-      0
-    ); // start in parallel
+  //   tl.to(
+  //     r,
+  //     {
+  //       x: rotation.x,
+  //       y: rotation.y,
+  //       z: rotation.z,
+  //       duration: 1.5,
+  //       ease: "power2.inOut",
+  //       onUpdate: () => groupRef.current.rotation.set(r.x, r.y, r.z),
+  //     },
+  //     0
+  //   ); // start in parallel
 
-    tl.to(
-      s,
-      {
-        x: scale.x,
-        y: scale.y,
-        z: scale.z,
-        duration: 1.5,
-        ease: "power2.inOut",
-        onUpdate: () => groupRef.current.scale.copy(s),
-      },
-      0
-    );
+  //   tl.to(
+  //     s,
+  //     {
+  //       x: scale.x,
+  //       y: scale.y,
+  //       z: scale.z,
+  //       duration: 1.5,
+  //       ease: "power2.inOut",
+  //       onUpdate: () => groupRef.current.scale.copy(s),
+  //     },
+  //     0
+  //   );
 
-    const directionKeyframes = swap; //i % 2 === 0 ? [0, 1] : [1, 0];
-    const ease = "circ4.inOut";
+  //   const directionKeyframes = swap; //i % 2 === 0 ? [0, 1] : [1, 0];
+  //   const ease = "circ4.inOut";
 
-    tl.to(
-      fboUniform.anim2,
-      {
-        keyframes: {
-          value: directionKeyframes,
-          ease: "none",
-          easeEach: ease,
-        },
-        onUpdate: (v) => {
-          // console.log(v, directionKeyframes, fboUniform);
-        },
-      },
-      "<"
-    );
-  }, [currentScene, isInView]);
+  //   tl.to(
+  //     fboUniform.anim2,
+  //     {
+  //       keyframes: {
+  //         value: directionKeyframes,
+  //         ease: "none",
+  //         easeEach: ease,
+  //       },
+  //       onUpdate: (v) => {
+  //         // console.log(v, directionKeyframes, fboUniform);
+  //       },
+  //     },
+  //     "<"
+  //   );
+  // }, [currentScene, isInView]);
 
   const obj = useRef({
     position: new THREE.Vector3(0, -0.251, -0.565),
@@ -467,7 +469,7 @@ const FboParticles = ({ width = 128 }) => {
       scale={[5.1, 5.1, 5.1]}
     >
       {geometry && (
-        <FlowParticleFactory width={128} ref={factoryRef}>
+        <FlowParticleFactory width={256} ref={factoryRef}>
           <FlowParticleChild
             geometry={geometries.plane}
             position={[2, 0, 0]}
