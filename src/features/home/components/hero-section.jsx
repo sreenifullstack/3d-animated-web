@@ -97,7 +97,7 @@ export default function HeroSection({ dissolve, hideGlow }) {
     },
   };
 
-  const { currentScene, setCurrentScene } = useSectionContext();
+  // const { currentScene, setCurrentScene } = useSectionContext();
 
   return (
     <>
@@ -108,6 +108,7 @@ export default function HeroSection({ dissolve, hideGlow }) {
       <div
         className="relative w-full min-h-screen overflow-hidden bg-gradient-to-br "
         ref={ref}
+        style={{ pointerEvents: "none" }}
       >
         {/* <motion.div
                     className="absolute inset-0 w-full h-full"
@@ -118,12 +119,13 @@ export default function HeroSection({ dissolve, hideGlow }) {
                     <Image src={bg || "/placeholder.svg"} alt="background" />
                 </motion.div> */}
         {/* {!hideGlow && <GlowAndThreeWaves dissolve={dissolve} />} */}
-        <div className="relative z-10 container mx-auto px-6 py-16 flex flex-col md:flex-row items-center min-h-screen">
+        <div className="relative z-10 container mx-auto px-6 py-0 flex flex-col md:flex-row items-center min-h-screen">
           <motion.div
-            className="w-full md:w-1/2 space-y-6 md:pr-8 text-center lg:text-left"
+            className="w-full md:w-1/2 space-y-0 md:pr-8 text-center lg:text-left"
             initial="hidden"
             animate="visible"
             variants={leftContentVariants}
+            style={{ pointerEvents: "none" }}
           >
             {/* <motion.h1
                             className="text-5xl text-center lg:text-left md:text-6xl lg:text-7xl font-bold text-white leading-tight"
@@ -170,38 +172,9 @@ export default function HeroSection({ dissolve, hideGlow }) {
               </motion.div>
             </motion.div>
           </motion.div>
-
-          <motion.div
-            className="w-full md:w-1/2 flex justify-center items-center mt-12 md:mt-0"
-            initial="hidden"
-            animate="visible"
-            variants={rightContentVariants}
-          >
-            <motion.div
-              className="relative"
-              initial="initial"
-              animate="animate"
-              variants={floatingAnimation}
-            >
-              <motion.div
-                className="w-64 h-80 relative"
-                initial="initial"
-                animate="animate"
-                variants={logoAnimationVariants}
-              >
-                <motion.div
-                  initial="initial"
-                  animate="animate"
-                  variants={glowAnimation}
-                >
-                  {/* <Image src={SumLogo || "/placeholder.svg"} alt="logo" className="object-contain" /> */}
-                </motion.div>
-              </motion.div>
-            </motion.div>
-          </motion.div>
         </div>
       </div>
-      <CounterSection />
+      {/* <CounterSection /> */}
     </>
   );
 }

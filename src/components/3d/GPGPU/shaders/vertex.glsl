@@ -19,7 +19,12 @@ void main() {
 
 	vec4 mvPosition = modelViewMatrix * vec4( newpos, 1.0 );
 
-	gl_PointSize = ( uParticleSize / -mvPosition.z );
+	float size = uParticleSize;
+	if(color.w == 2.){
+		// size*=2.;
+	}
+
+	gl_PointSize = ( size / -mvPosition.z );
 
 	gl_Position = projectionMatrix * mvPosition;
 }

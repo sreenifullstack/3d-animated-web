@@ -24,17 +24,17 @@ const nextConfig = {
 
   // Keep your webpack config for production builds (next build)
   // or if you ever run 'next dev' without the --turbo flag.
-  //   webpack: (config, { isDev, isWebpack }) => {
-  //     // This part ensures it works for Webpack builds (e.g., 'next build' or 'next dev' without --turbo)
-  //     if (isWebpack) {
-  //       // Only apply if Webpack is the active bundler
-  //       config.module.rules.push({
-  //         test: /\.(glsl|vs|fs|vert|frag)$/,
-  //         use: ["raw-loader", "glslify", "glslify-loader"],
-  //       });
-  //       return config;
-  //     }
-  //   },
+  webpack: (config, { isDev, webpack }) => {
+    // This part ensures it works for Webpack builds (e.g., 'next build' or 'next dev' without --turbo)
+    config.module.rules.push({
+      test: /\.(glsl|vs|fs|vert|frag)$/,
+      use: ["raw-loader", "glslify", "glslify-loader"],
+    });
+    if (webpack) {
+    }
+    // Only apply if Webpack is the active bundler
+    return config;
+  },
 };
 
 export default nextConfig;

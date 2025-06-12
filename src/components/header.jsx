@@ -269,7 +269,7 @@ export default function Header() {
 
   return (
     <motion.section
-      className="w-full pb-20 px-6 sticky top-0 z-10"
+      className="w-full pb-0 px-6 sticky top-0 z-10"
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}

@@ -20,6 +20,7 @@ import {
 // import { useParticleUniforms } from "./useParticleUniforms";
 
 import AA from "@/components/3d/shaders/test.vert";
+console.log(AA, "bb");
 
 import { useGPGPU } from "./useGPGPU";
 

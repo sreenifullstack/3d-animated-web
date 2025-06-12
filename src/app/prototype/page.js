@@ -1,5 +1,13 @@
 "use client";
-import { memo, useEffect, useMemo, useRef, useState } from "react";
+import {
+  forwardRef,
+  memo,
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 // import FboScene from "@/components/3d/FBO/FboScene";
 // import Canvas from "@/components/3d/Canvas";
 import { Canvas, extend, useFrame, useThree } from "@react-three/fiber";
@@ -61,6 +69,7 @@ import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer
 import { MotionBloomPass } from "@/components/3d/GPGPU/MotionBloomPass";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass.js";
 import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass.js";
+import { PostProcessing } from "@/components/3d/GPGPU/PostProcessing";
 
 const frameOptions = [
   {
@@ -117,7 +126,7 @@ const AnimatedBlobScene = () => {
   );
 };
 
-const MainScene = () => {
+const MainScene = ({ scrollElement }) => {
   const scene = useRef();
   const { camera } = useThree();
   useFrame(({ gl }, delta) => {
@@ -129,7 +138,7 @@ const MainScene = () => {
     <scene ref={scene}>
       {/* <BlobBackground frameOptions={frameOptions} /> */}
       {/* <BackgroundBox /> */}
-      <FboParticlesV2 width={256} />
+      <FboParticlesV2 width={256} scrollElement={scrollElement} />
 
       {/* <PresistSmoothGradientBackground frameOptions={frameOptions} /> */}
 
@@ -140,13 +149,20 @@ const MainScene = () => {
   );
 };
 
-const HTMLContend = () => {
-  const { containerRef, sectionRefs, timelines } = useSectionContext();
-
+const HTMLContend = forwardRef((props, ref) => {
+  // const { containerRef, sectionRefs, timelines } = useSectionContext();
+  const containerRef = useRef();
   const sectionsRef = useRef([]);
 
+  // useImperativeHandle
+  useImperativeHandle(ref, () => ({
+    containerRef: containerRef,
+    sectionsRef: sectionsRef,
+  }));
+
   useEffect(() => {
-    sectionRefs.current = sectionsRef.current;
+    // ref.current = {
+    // };
   }, [sectionsRef]);
 
   return (
@@ -162,87 +178,21 @@ const HTMLContend = () => {
       ))}
     </div>
   );
-};
+});
 
 // "threshold": 0.058,
 //     "strength": 1.2,
 //     "radius": 0,
 //     "directionX": 1.5,
 //     "directionY": 1
-const PostProcessing = ({
-  threshold = 0.4,
-  strength = 1.5,
-  radius = 0.85,
-  direction = new THREE.Vector2(1.5, 1),
-  ...props
-}) => {
-  const { gl: renderer, scene, camera, size } = useThree();
 
-  const [composer, setComposer] = useState(null);
-
-  const bloomPass = useMemo(() => {
-    return new MotionBloomPass(
-      new THREE.Vector2(size.width, size.height),
-      strength,
-      threshold,
-      radius
-    );
-  }, []);
-
-  useEffect(() => {
-    if (!scene || !camera || !renderer) return;
-
-    const renderScene = new RenderPass(scene, camera);
-    const outputPass = new OutputPass();
-
-    const newComposer = new EffectComposer(renderer);
-    newComposer.addPass(renderScene);
-    newComposer.addPass(bloomPass);
-    newComposer.addPass(outputPass);
-    setComposer(newComposer);
-
-    return () => {
-      newComposer.dispose();
-    };
-  }, [scene, camera, renderer, bloomPass]);
-
-  useEffect(() => {
-    if (!composer) return;
-    composer.setSize(size.width, size.height);
-    composer.setPixelRatio(window.devicePixelRatio);
-
-    // bloomPass.resolution = new Vector2(size.width, size.height)
-  }, [size, composer, bloomPass]);
-
-  useEffect(() => {
-    if (!bloomPass) return;
-    bloomPass.threshold = threshold;
-    bloomPass.strength = strength;
-    bloomPass.radius = radius;
-    bloomPass.BlurDirectionX.copy(direction);
-  }, [threshold, strength, radius, bloomPass, direction]);
-
-  useFrame((_, delta) => {
-    if (composer) {
-      composer.render(delta);
-    }
-  }, 1); // Render priority 1 (after main scene)
-
-  // return null;
-  return (
-    <group {...props}>
-      {/* Your particle system/components here */}
-      {props.children}
-    </group>
-  );
-};
 export default function Prototype() {
-  const containerRef = useRef(null);
+  const ref = useRef(null);
   const sectionRefs = useRef([]);
   const timelines = useRef([]);
 
   const eR = useRef();
-  window.x = eR;
+  window.x = ref;
 
   return (
     <SectionProvider>
@@ -262,9 +212,12 @@ export default function Prototype() {
             }}
           >
             <Stats />
-            <OrbitControls />
+            <OrbitControls
+              enableZoom={false}
+              domElement={ref.current?.containerRef?.current}
+            />
             <PostProcessing>
-              <MainScene />
+              <MainScene scrollElement={ref.current?.sectionsRef?.current} />
             </PostProcessing>
             {/* <mesh>
               <boxGeometry />
@@ -282,7 +235,7 @@ export default function Prototype() {
           </Canvas>
         </div>
         <Leva />
-        {/* <HTMLContend /> */}
+        <HTMLContend ref={ref} />
       </div>
     </SectionProvider>
   );

@@ -315,6 +315,7 @@ export default function Home() {
           end: "bottom top",
           invalidateOnRefresh: true,
           yoyo: true,
+          onComplete: () => console.log("a"),
         },
         onComplete: () => {
           console.log("completed:", i);

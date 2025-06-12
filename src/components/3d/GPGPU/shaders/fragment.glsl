@@ -2,6 +2,10 @@ varying vec2 vUv;
 
 uniform sampler2D uVelocityTexture;
 uniform vec3 uColor;
+uniform vec3 uColor1;
+uniform vec3 uColor2;
+uniform vec3 uColor3;
+
 uniform float uMinAlpha;
 uniform float uMaxAlpha;
 // uniform vec3 uColor = vec3(0.808, 0.647, 0.239);
@@ -12,12 +16,23 @@ uniform float uMaxAlpha;
 void main() {
 	float center = length(gl_PointCoord - 0.5);
 
-	vec3 velocity = texture2D( uVelocityTexture, vUv ).xyz * 100.0;
+   	vec4 velTex  = texture2D( uVelocityTexture, vUv );
+	float id = velTex.w;
+	vec3 velocity = velTex.xyz * 100.0;
 
 	float velocityAlpha = clamp(length(velocity.r), uMinAlpha, uMaxAlpha);
 
 	if (center > 0.5) { discard; }
+    
+	if(texture2D( uVelocityTexture, vUv ).w == 2.){
+		gl_FragColor = vec4(uColor1, .055);
+		return;
+	}
+    
+	vec4 outColor = vec4(uColor1, velocityAlpha);
+	if(id == 12.){
+		outColor = vec4(uColor1, velocityAlpha*0.75 );
+	}
 
-
-	gl_FragColor = vec4(uColor, velocityAlpha);
+	gl_FragColor =  outColor;//vec4(outColor, velocityAlpha);
 }
