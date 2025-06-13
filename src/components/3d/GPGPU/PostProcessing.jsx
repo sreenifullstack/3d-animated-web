@@ -48,11 +48,15 @@ export const PostProcessing = forwardRef(
       );
     }, []);
 
+    const outputPass = useMemo(() => {
+      return new OutputPass();
+    }, []);
+
     useEffect(() => {
       if (!scene || !camera || !renderer) return;
 
       const renderScene = new RenderPass(scene, camera);
-      const outputPass = new OutputPass();
+      // const outputPass = new OutputPass();
 
       const newComposer = new EffectComposer(renderer);
       newComposer.addPass(renderScene);
@@ -66,12 +70,15 @@ export const PostProcessing = forwardRef(
     }, [scene, camera, renderer, bloomPass]);
 
     useEffect(() => {
-      if (!composer) return;
+      if (!composer || !bloomPass || !outputPass) return;
       composer.setSize(size.width, size.height);
       composer.setPixelRatio(window.devicePixelRatio);
-
+      // bloomPass.setSize(size.width, size.height);
+      // bloomPass.setPixelRatio(window.devicePixelRatio);
+      // outputPass.setSize(size.width, size.height);
+      // bloomPass.setPixelRatio(window.devicePixelRatio);
       // bloomPass.resolution = new Vector2(size.width, size.height)
-    }, [size, composer, bloomPass]);
+    }, [size, composer, bloomPass, outputPass]);
 
     // useEffect(() => {
     //   if (!bloomPass) return;

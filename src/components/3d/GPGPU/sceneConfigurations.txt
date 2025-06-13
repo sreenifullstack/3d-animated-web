@@ -19,8 +19,6 @@ export const sceneConfigurations = [
       minAlpha: 0.04,
       maxAlpha: 0.8,
     },
-
-    // need to add postprocessing
   },
 
   // 2

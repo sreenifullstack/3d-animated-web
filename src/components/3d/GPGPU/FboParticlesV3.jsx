@@ -61,7 +61,7 @@ export const hexToRgb = (hex) => {
 };
 
 const OPTS = {
-  ParticleSize: 5,
+  ParticleSize: 2,
   Color1: 0x111111,
   Color2: 0x23f7dd,
   Color3: 0x222222,
@@ -87,7 +87,7 @@ const defaultModel = new THREE.Mesh(new THREE.PlaneGeometry());
 const intro_props = {
   obj: {
     position: [0, 0.0, 0],
-    rotation: [0, 0, 0],
+    rotation: [0, 0, -Math.PI / 12],
     scale: [1, 1, 1],
   },
   mouse: {
@@ -97,7 +97,7 @@ const intro_props = {
     color1: "#54aba5",
     color2: "#274045",
     color3: "#375d54",
-    particleSize: 7,
+    particleSize: 0.7,
     minAlpha: 0.1,
     maxAlpha: 0.8,
   },
@@ -459,33 +459,7 @@ const FboParticles = memo(
                 mouseRef.current.force = 1;
                 mouseRef.current.coord.copy(localMousePos);
                 uniforms.velocity.uMouse.value.copy(localMousePos);
-
-                // For debugging: log the coordinates
-                // console.log(
-                //   "World:",
-                //   e.intersections[0].point,
-                //   "Local:",
-                //   localMousePos
-                // );
               }}
-
-              // onPointerMove={(e) => {
-
-              // const { gpgpu, uniforms } = computeState.current;
-              // if (!gpgpu || !uniforms) return;
-
-              // if (!e.intersections.length) return;
-
-              // mouseRef.current.force = 1;
-              // mouseRef.current.coord.copy(e.intersections[0].point);
-              // uniforms.velocity.uMouse.value.copy(mouseRef.current.coord);
-              // console.log(e.intersections[0]);
-              // // uniforms.velocity.uMouse.value.copy(mouseRef.current.coord)
-              // // Update mouse coordinates for particle interaction
-              // // if (gpuCompute?.uniforms?.velocity) {
-              // // console.log(gpgpuUniforms.velocity.uMouse.value);
-              // // }
-              // }}
             >
               <mesh visible={false}>
                 <primitive
@@ -508,7 +482,7 @@ const FboParticles = memo(
                 attach="material"
                 positionTexture={computedTextures.position}
                 velocityTexture={computedTextures.velocity}
-                resolution={new THREE.Vector2(size, size)}
+                // resolution={new THREE.Vector2(size, size)}
                 color1={color1}
                 color2={color2}
                 size={particleSize}
@@ -523,193 +497,6 @@ const FboParticles = memo(
           </group>
         </group>
       );
-
-      // const gpgpuCompute = useRef();
-      // const gpgpuUniforms = useRef();
-      // const gpgpuTextures = useRef({
-      //   positionTexture: null,
-      //   velocityTexture: null,
-      // });
-      // const _gcrVariable = useRef({
-      //   position: null,
-      //   velocity: null,
-      // });
-
-      // const { gl } = useThree();
-
-      // const number = useMemo(() => size * size, [size]);
-      // const simResolution = useMemo(() => new THREE.Vector2(size, size), [size]);
-
-      // const textureData = useMemo(() => {
-      //   const positionData = new Float32Array(4 * number);
-      //   const positions = new Float32Array(3 * number);
-      //   const uvs = new Float32Array(2 * number);
-      //   const velocityData = new Float32Array(4 * number);
-      //   const _position = new THREE.Vector3();
-
-      //   velocityData.fill(0);
-
-      //   for (let i = 0; i < size; i++) {
-      //     for (let j = 0; j < size; j++) {
-      //       const index = i * size + j;
-      //       const halfSize = size / 2;
-
-      //       let x = mapLinear(i % halfSize, 0, halfSize, -5, 5);
-      //       let y = mapLinear(j % halfSize, 0, halfSize, -5, 5);
-      //       _position.set(x, y, 0).multiplyScalar(2);
-
-      //       positionData[4 * index] = _position.x;
-      //       positionData[4 * index + 1] = _position.y;
-      //       positionData[4 * index + 2] = _position.z;
-      //       positionData[4 * index + 3] = i > halfSize ? 10 : 0;
-
-      //       positions[3 * index] = _position.x;
-      //       positions[3 * index + 1] = _position.y;
-      //       positions[3 * index + 2] = _position.z;
-
-      //       uvs[2 * index] = j / (size - 1);
-      //       uvs[2 * index + 1] = i / (size - 1);
-      //     }
-      //   }
-
-      //   // Create textures once
-      //   const posTexture = new THREE.DataTexture(
-      //     positionData,
-      //     size,
-      //     size,
-      //     THREE.RGBAFormat,
-      //     THREE.FloatType
-      //   );
-      //   posTexture.needsUpdate = true;
-
-      //   const velTexture = new THREE.DataTexture(
-      //     velocityData,
-      //     size,
-      //     size,
-      //     THREE.RGBAFormat,
-      //     THREE.FloatType
-      //   );
-      //   velTexture.needsUpdate = true;
-
-      //   return {
-      //     position: positions,
-      //     uvs,
-      //     positionTexture: posTexture,
-      //     velocityTexture: velTexture,
-      //   };
-      // }, [size, number]); // Removed sampler dependency as it's not used here
-
-      // // Memoize geometry
-      // const geometry = useMemo(() => {
-      //   const geom = new THREE.BufferGeometry();
-      //   geom.setAttribute(
-      //     "position",
-      //     new THREE.BufferAttribute(textureData.position, 3)
-      //   );
-      //   geom.setAttribute("uv", new THREE.BufferAttribute(textureData.uvs, 2));
-      //   return geom;
-      // }, [textureData.position, textureData.uvs]);
-
-      // useEffect(() => {
-      //   if (!gl || !textureData.positionTexture || !textureData.velocityTexture)
-      //     return;
-
-      //   console.log("GPGPU");
-      //   const _gcr = new GPUComputationRenderer(size, size, gl);
-
-      //   const positionVariable = _gcr.addVariable(
-      //     "uCurrentPosition",
-      //     simFragment,
-      //     textureData.positionTexture
-      //   );
-      //   const velocityVariable = _gcr.addVariable(
-      //     "uCurrentVelocity",
-      //     simFragmentVelocity,
-      //     textureData.velocityTexture
-      //   );
-
-      //   _gcr.setVariableDependencies(positionVariable, [
-      //     positionVariable,
-      //     velocityVariable,
-      //   ]);
-      //   _gcr.setVariableDependencies(velocityVariable, [
-      //     positionVariable,
-      //     velocityVariable,
-      //   ]);
-
-      //   const _uniforms = {
-      //     position: positionVariable.material.uniforms,
-      //     velocity: velocityVariable.material.uniforms,
-      //   };
-
-      //   // Initialize uniforms
-      //   _uniforms.velocity.uMouse = { value: new THREE.Vector3() };
-      //   _uniforms.velocity.uMouseSpeed = { value: 0 };
-      //   _uniforms.velocity.uOriginalPosition = {
-      //     value: textureData.positionTexture,
-      //   };
-      //   _uniforms.velocity.uProgress = { value: 0 };
-      //   _uniforms.velocity.intro = { value: true };
-
-      //   _uniforms.velocity.uTime = { value: 0 };
-      //   _uniforms.velocity.uForce = { value: 0.7 };
-
-      //   _uniforms.position.uTime = { value: 0 };
-      //   _uniforms.position.intro = { value: true };
-
-      //   _gcr.init();
-      //   _gcr.compute();
-
-      //   // Store references
-      //   _gcrVariable.current = {
-      //     position: positionVariable,
-      //     velocity: velocityVariable,
-      //   };
-      //   gpgpuUniforms.current = _uniforms;
-      //   gpgpuCompute.current = _gcr;
-      //   gpgpuTextures.current = {
-      //     positionTexture: _gcr.getCurrentRenderTarget(positionVariable).texture,
-      //     velocityTexture: _gcr.getCurrentRenderTarget(velocityVariable).texture,
-      //   };
-
-      //   return () => {
-      //     _gcr.dispose();
-      //   };
-      // }, [size, gl, textureData.positionTexture, textureData.velocityTexture]);
-
-      // useFrame(({ clock }) => {
-      //   const compute = gpgpuCompute.current;
-      //   const uniforms = gpgpuUniforms.current;
-
-      //   if (!compute || !uniforms?.velocity) return;
-      //   compute.compute();
-      //   const elapsedTime = clock.getElapsedTime();
-      //   uniforms.velocity.uTime.value = elapsedTime;
-      //   uniforms.position.uTime.value = elapsedTime;
-      // });
-
-      // return (
-      //   <group>
-      //     <points ref={particlesRef} geometry={geometry}>
-      //       <ParticlesMaterial
-      //         ref={particleMaterialRef}
-      //         attach="material"
-      //         positionTexture={gpgpuTextures.current.positionTexture}
-      //         velocityTexture={gpgpuTextures.current.velocityTexture}
-      //         resolution={simResolution}
-      //         color1={"#23F7DD"} //06DFC //#23F7DD
-      //         color2={"#06DFC4"}
-      //         size={7}
-      //         minAlpha={0.04}
-      //         maxAlpha={0.8}
-      //         depthWrite={false}
-      //         depthTest={false}
-      //         blending={THREE.AdditiveBlending}
-      //         transparent={true}
-      //       />
-      //     </points>
-      //   </group>
-      // );
     }
   )
 );
@@ -723,158 +510,183 @@ const data = [
   { id: "torus", model: new THREE.TorusGeometry() },
 ];
 
-const FboParticlesV2 = memo(({ width = 128, activeSceneId = null }) => {
-  const particlesRef = useRef();
-  const [gpuCompute, setGpuCompute] = useState(null);
-  // Effect to set gpuCompute once particlesRef.current is available
-  useEffect(() => {
-    if (particlesRef.current && !gpuCompute) {
-      setGpuCompute(particlesRef.current.computeState());
-    }
-  }, [particlesRef, gpuCompute]); // Include gpuCompute in dependencies to prevent re-running if already set
+const FboParticlesV2 = memo(
+  ({ width = 128, activeSceneId = null, ...props }) => {
+    const { size: viewport } = useThree();
+    const particlesRef = useRef();
+    const [gpuCompute, setGpuCompute] = useState(null);
+    const [particleSize, setParticleSize] = useState(0);
 
-  // console.log(activeSceneId);
-  const mouseRef = useRef({
-    coord: new THREE.Vector3(),
-    force: 0,
-    introForce: 0,
-  });
+    useEffect(() => {
+      if (particlesRef.current && !gpuCompute) {
+        setGpuCompute(particlesRef.current.computeState());
+      }
+    }, [particlesRef, gpuCompute]);
 
-  // const gpuCompute = useMemo(() => {
-  //   return particlesRef?.current?.computeState?.();
-  // }, [particlesRef.current]);
-  console.log(gpuCompute, (window.xx = gpuCompute));
-  const model = useGLTF(path);
+    const mouseRef = useRef({
+      coord: new THREE.Vector3(),
+      force: 0,
+      introForce: 0,
+    });
 
-  const [size, setSize] = useState(512);
-  const [isIntro, setIntro] = useState(true);
+    // const gpuCompute = useMemo(() => {
+    //   return particlesRef?.current?.computeState?.();
+    // }, [particlesRef.current]);
+    console.log(gpuCompute, (window.xx = gpuCompute));
+    const model = useGLTF(path);
 
-  const textures = useMemo(() => {
-    if (!model) return null;
-    return [
-      {
-        id: 0,
-        ...sampleMixedMeshes(
-          model.meshes.sigma,
-          model.meshes.sigma_iray,
-          size,
-          0.85
-        ),
-      },
-      ...data.map((item, i) => {
-        return { id: i + 1, ...sampleMesh(item.model, size) };
-      }),
-    ];
-  }, [size, model]);
+    const [size, setSize] = useState(512);
+    const [isIntro, setIntro] = useState(true);
 
-  const [config, setCongif] = useState(intro_props);
-  const [activeTexture, setActiveTexture] = useState(null);
+    const textures = useMemo(() => {
+      if (!model) return null;
+      return [
+        {
+          id: 0,
+          ...sampleMixedMeshes(
+            model.meshes.sigma,
+            model.meshes.sigma_iray,
+            size,
+            0.85
+          ),
+        },
+        ...data.map((item, i) => {
+          return { id: i + 1, ...sampleMesh(item.model, size) };
+        }),
+      ];
+    }, [size, model]);
 
-  useEffect(() => {
-    if (isIntro) {
-      setCongif(intro_props);
-      setActiveTexture(null);
-    }
-  }, [isIntro]);
+    const [config, setCongif] = useState(intro_props);
+    const [activeTexture, setActiveTexture] = useState(null);
 
-  useEffect(() => {
-    if (isIntro) return;
-    if (!sceneConfigurations[activeSceneId]) {
-      // setIntro(true);
-      // mouseRef.current.introForce = 0;
-      // return;
-    }
-    if (activeSceneId !== null && textures?.[activeSceneId]) {
-      setCongif({ ...sceneConfigurations[activeSceneId] });
+    useEffect(() => {
+      if (isIntro) {
+        setCongif(intro_props);
+        setActiveTexture(null);
+      }
+    }, [isIntro]);
 
-      // console.log({ activeSceneId }, textures?.[activeSceneId].positionTexture);
-      // console.log(textures?.[activeSceneId], activeSceneId);
-      setActiveTexture(textures?.[activeSceneId] || null);
-    }
-    // console.log("");
-    // const currentConfig = sceneConfigurations[activeSceneId];
-  }, [activeSceneId, textures, isIntro]);
+    useEffect(() => {
+      if (isIntro) return;
+      if (!sceneConfigurations[activeSceneId]) {
+        // setIntro(true);
+        // mouseRef.current.introForce = 0;
+        // return;
+      }
+      if (activeSceneId !== null && textures?.[activeSceneId]) {
+        setCongif({ ...sceneConfigurations[activeSceneId] });
 
-  window.texture = textures;
+        // console.log({ activeSceneId }, textures?.[activeSceneId].positionTexture);
+        // console.log(textures?.[activeSceneId], activeSceneId);
+        setActiveTexture(textures?.[activeSceneId] || null);
+      }
+      // console.log("");
+      // const currentConfig = sceneConfigurations[activeSceneId];
+    }, [activeSceneId, textures, isIntro]);
 
-  // activeSceneId to swap orgianlposition if the sene is not into
+    window.texture = textures;
 
-  useFrame(({ gl, clock }) => {
-    const { gpgpu, uniforms } = gpuCompute || {};
-    if (!gpgpu || !uniforms) return;
-  });
+    // activeSceneId to swap orgianlposition if the sene is not into
 
-  window.z = {
-    config,
-    isIntro,
-    setIntro,
-    activeSceneId,
-    activeTexture,
-    textures,
-    setActiveTexture,
-  };
-  // console.log(window.z);
+    useFrame(({ gl, clock }) => {
+      const { gpgpu, uniforms } = gpuCompute || {};
+      if (!gpgpu || !uniforms) return;
+    });
 
-  return (
-    <>
-      {/* {textures.map((t, i) => {
-        return (
-          <mesh key={t?.id || i} visible={t.id === activeTexture?.id}>
-            <primitive object={t?.geometry} attach="geometry" />
-            <planeGeometry args={[10, 10, 10]} />
-            <meshBasicMaterial wireframe opacity={0.1} transparent />
-          </mesh>
-        );
-      })
-      } */}
+    window.z = {
+      config,
+      isIntro,
+      setIntro,
+      activeSceneId,
+      activeTexture,
+      textures,
+      setActiveTexture,
+    };
+    // console.log(window.z);
 
-      <Bvh
-        enabled={isIntro}
-        onPointerMove={(e) => {
-          if (!e.intersections.length) return;
+    useEffect(() => {
+      const minScreenSize = 300; // Smallest expected screen (e.g., mobile)
+      const maxScreenSize = 2705; // Largest expected screen (e.g., desktop)
 
-          mouseRef.current.introForce += 0.45;
-          if (mouseRef.current.introForce > 10) {
-            setIntro(false);
-          }
-        }}
-      >
-        <mesh visible={false}>
-          <primitive
-            object={new THREE.PlaneGeometry(100, 100)}
-            attach="geometry"
-          />
-          <meshBasicMaterial wireframe opacity={0.1} transparent />
-        </mesh>
-      </Bvh>
+      const minPointSize = isIntro ? 1 : 0.5; // Size at `size = 0`
+      const maxPointSize = isIntro ? 2 : 0.55; // Size at `size = 1`
 
-      <FboParticles
-        ref={particlesRef}
-        size={512}
-        color1={config?.bg?.color1}
-        color2={config?.bg?.color2}
-        color3={config?.bg?.color3}
-        particleSize={config?.bg?.particleSize}
-        minAlpha={config?.bg?.minAlpha}
-        maxAlpha={config?.bg?.maxAlpha}
-        originalPositionTex={activeTexture?.positionTexture}
-        originalGeometry={activeTexture?.geometry}
-        position={config?.obj?.position}
-        rotation={config?.obj?.rotation}
-        scale={config?.obj?.scale}
-        // blending={config.texProp?.blending}
-        // opacity={config.texProp?.opacity}
-      ></FboParticles>
-      <PostProcessing
-        // ref={pp_ref}
-        direction={new THREE.Vector3(1.5, 1)}
-        threshold={isIntro ? 0.15 : 0.058}
-        strength={isIntro ? 0.535 : 1.2}
-        radius={isIntro ? 0.535 : 1}
-      />
-    </>
-  );
-});
+      function mapRange(value, inMin, inMax, outMin, outMax) {
+        return ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
+      }
+
+      const screenWidth = window.innerWidth;
+      const screenHeight = window.innerHeight;
+
+      // Use the minimum of screenWidth and screenHeight for scaling
+      // This helps ensure the size scales appropriately for both portrait and landscape
+      const effectiveScreenDimension = Math.min(screenWidth, screenHeight);
+
+      let dynamicSize = mapRange(
+        Math.min(effectiveScreenDimension, maxScreenSize), // Clamp to maxScreenSize
+        minScreenSize,
+        maxScreenSize,
+        minPointSize,
+        maxPointSize
+      );
+      if (screenWidth > 1700 && screenWidth < 1800) dynamicSize *= 1.85;
+      if (screenWidth > 1800 && screenWidth < 2200) dynamicSize *= 1.75;
+      if (screenWidth > 2200) dynamicSize *= 2;
+
+      setParticleSize(dynamicSize * 0.85);
+    }, [isIntro, viewport]);
+    return (
+      <>
+        <group {...props}>
+          <Bvh
+            enabled={isIntro}
+            onPointerMove={(e) => {
+              if (!e.intersections.length) return;
+
+              mouseRef.current.introForce += 0.45;
+              if (mouseRef.current.introForce > 10) {
+                setIntro(false);
+              }
+            }}
+          >
+            <mesh visible={false}>
+              <primitive
+                object={new THREE.PlaneGeometry(1000, 1000)}
+                attach="geometry"
+              />
+              <meshBasicMaterial wireframe opacity={0.01} transparent />
+            </mesh>
+          </Bvh>
+
+          <FboParticles
+            ref={particlesRef}
+            size={512}
+            color1={config?.bg?.color1}
+            color2={config?.bg?.color2}
+            color3={config?.bg?.color3}
+            particleSize={particleSize} //config?.bg?.particleSize
+            minAlpha={config?.bg?.minAlpha}
+            maxAlpha={config?.bg?.maxAlpha}
+            originalPositionTex={activeTexture?.positionTexture}
+            originalGeometry={activeTexture?.geometry}
+            position={config?.obj?.position}
+            rotation={config?.obj?.rotation}
+            scale={config?.obj?.scale}
+            // blending={config.texProp?.blending}
+            // opacity={config.texProp?.opacity}
+          ></FboParticles>
+        </group>
+        <PostProcessing
+          // ref={pp_ref}
+          direction={new THREE.Vector3(1.5, 1)}
+          threshold={isIntro ? 0.15 : 0.058}
+          strength={isIntro ? 0.535 : 1.2}
+          radius={isIntro ? 0.535 : 1}
+        />
+      </>
+    );
+  }
+);
 
 useGLTF.preload(path);
 

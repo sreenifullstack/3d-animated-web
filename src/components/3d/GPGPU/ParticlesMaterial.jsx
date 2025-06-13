@@ -7,7 +7,7 @@ import React, {
   useImperativeHandle,
 } from "react";
 import * as THREE from "three";
-import { useFrame } from "@react-three/fiber";
+import { useFrame, useThree } from "@react-three/fiber";
 
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -52,7 +52,7 @@ export const ParticlesMaterial = memo(
       const uniformsRef = useRef({
         uPositionTexture: { value: positionTexture || null },
         uVelocityTexture: { value: velocityTexture || null },
-        uResolution: { value: resolution || new THREE.Vector2() },
+        // uResolution: { value: resolution || new THREE.Vector2() },
         uParticleSize: { value: size },
         uColor1: { value: new THREE.Color(color1) }, // Initializing THREE.Color objects here
         uColor2: { value: new THREE.Color(color2) },
@@ -60,8 +60,18 @@ export const ParticlesMaterial = memo(
         uMinAlpha: { value: minAlpha },
         uMaxAlpha: { value: maxAlpha },
         uTime: { value: 0 },
+        uResolution: { value: new THREE.Vector2(1, 1) },
+        uPixelRatio: { value: 1 },
       });
 
+      const { size: viewport, gl } = useThree();
+      console.log(viewport);
+      useEffect(() => {
+        const uniforms = uniformsRef.current;
+        if (!uniforms) return;
+        uniforms.uResolution.value.set(viewport.width, viewport.height),
+          (uniforms.uPixelRatio.value = window.devicePixelRatio);
+      }, [viewport, gl]);
       const materialRef = useRef();
 
       useImperativeHandle(ref, () => materialRef.current);
@@ -74,7 +84,7 @@ export const ParticlesMaterial = memo(
           uniforms.uPositionTexture.value = positionTexture;
         if (velocityTexture !== undefined)
           uniforms.uVelocityTexture.value = velocityTexture;
-        if (resolution !== undefined) uniforms.uResolution.value = resolution;
+        // if (resolution !== undefined) uniforms.uResolution.value = resolution;
         if (size !== undefined) uniforms.uParticleSize.value = size;
       }, [positionTexture, velocityTexture, resolution, size]);
 

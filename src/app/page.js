@@ -75,115 +75,6 @@ const frameOptions = [
   },
 ];
 
-const AnimatedBlobScene = () => {
-  const scene = useRef();
-  const { camera } = useThree();
-  useFrame(({ gl }, delta) => {
-    gl.clear(true, true);
-    // gl.autoClear = false;
-    // gl.clearDepth();
-    gl.render(scene.current, camera);
-  }, 10);
-  return (
-    <scene ref={scene}>
-      <BlobBackground />
-    </scene>
-  );
-};
-
-// this.params = {
-//   threshold: 0.058,
-//   strength: 1.2,
-//   radius: 0,
-//   directionX: 1.5,
-//   directionY: 1,
-// };
-
-const MainScene = () => {
-  const scene = useRef();
-  const { camera } = useThree();
-  // useFrame(({ gl }, delta) => {
-  //   // gl.autoClear = false;
-  //   // gl.clearDepth();
-  //   gl.render(scene.current, camera);
-  // }, 100);
-  return (
-    <scene ref={scene}>
-      {/* <BlobBackground frameOptions={frameOptions} /> */}
-      {/* <BackgroundBox /> */}
-      <FboParticlesV2 width={256} />
-
-      {/* <PresistSmoothGradientBackground frameOptions={frameOptions} /> */}
-
-      {/* <gridHelper /> */}
-
-      {/* <Box /> */}
-    </scene>
-  );
-};
-
-const HTMLContend = () => {
-  const { containerRef, sectionRefs, timelines } = useSectionContext();
-
-  const sectionsRef = useRef([]);
-
-  const { scrollYProgress } = useScroll(containerRef);
-  console.log(scrollYProgress);
-
-  useEffect(() => {
-    sectionRefs.current = sectionsRef.current;
-  }, [sectionsRef]);
-
-  // const html_section = [
-  //   <ScrollSection>
-  //   </ScrollSection>,
-  //   <ScrollSection>
-  //     <FeaturesSection />
-  //   </ScrollSection>,
-  //   <ScrollSection>
-  //     <PlanetSection />
-  //   </ScrollSection>,
-  //   <ScrollSection>
-  //     <EchosystemSection />
-  //   </ScrollSection>,
-  //   <ScrollSection>
-  //     <RewardsSection />
-  //   </ScrollSection>,
-  //   <ScrollSection>
-  //     <PartnersSection />
-  //   </ScrollSection>,
-  //   <ScrollSection>
-  //     <NewsSlider />
-  //   </ScrollSection>,
-  //   <ScrollSection>
-  //     <CTASection />
-  //   </ScrollSection>,
-  //   <ScrollSection>
-  //     <FAQSection />
-  //   </ScrollSection>,
-  //   <ScrollSection>
-  //     <FooterNewsletter />
-  //   </ScrollSection>,
-  // ];
-
-  return (
-    <div className="relative z-10 BG-POS" ref={containerRef}>
-      <div ref={(el) => (sectionsRef.current[0] = el)}>
-        <HeroSection />
-      </div>
-      {frameOptions.map((frame, i) => (
-        <section
-          key={i}
-          ref={(el) => (sectionsRef.current[i + 1] = el)}
-          className="w-full h-screen flex items-center justify-center"
-        >
-          {frame.component}
-        </section>
-      ))}
-    </div>
-  );
-};
-
 export default function Home() {
   const containerRef = useRef();
   const sectionRefs = useRef([]);
@@ -199,134 +90,6 @@ export default function Home() {
       setEventSource(parentHtmlRef.current);
     }
   }, []);
-
-  useGSAP(
-    () => {
-      if (!containerRef.current || !sectionRefs.current.length) return;
-
-      // Kill any existing timelines first
-      timelines.current.forEach((tl) => tl.kill());
-      timelines.current = [];
-
-      sectionRefs.current.forEach((section, index) => {
-        // if (index === sectionRefs.current.length - 1) return;
-
-        let tl = gsap.fromTo(
-          section,
-          {},
-          {
-            // autoAlpha: 1,
-            // y: 0,
-            ease: "power2.out",
-            duration: 1,
-            scrollTrigger: {
-              trigger: section,
-              endTrigger: section, //sectionRefs.current[index + 1],
-              scrub: true,
-              start: "top top",
-              end: "bottom top",
-              invalidateOnRefresh: true,
-              yoyo: true,
-              markers: true,
-              immediateRender: false,
-              // onEnter: () => console.log(`Entering section ${index}`),
-              // onLeave: () => console.log(`Leaving section ${index}`),
-              // onEnterBack: () => console.log(`Entering back section ${index}`),
-              // onLeaveBack: () => console.log(`Leaving back section ${index}`),
-            },
-            onStart: () => {
-              console.log("completed:", index, index + 1);
-              setActiveScene(index + 1);
-            },
-            onReverseComplete: () => {
-              console.log("reverse completed:", index, index - 1);
-              setActiveScene(index - 1 < 0 ? index : index - 1);
-            },
-          }
-        );
-
-        timelines.current.push(tl);
-      });
-
-      return () => {
-        timelines.current.forEach((tl) => {
-          if (tl.scrollTrigger) {
-            tl.scrollTrigger.kill();
-          }
-          tl.kill();
-        });
-        timelines.current = [];
-      };
-    },
-    {
-      scope: containerRef,
-      dependencies: [sectionRefs.current],
-    }
-  );
-
-  //   if (!containerRef.current || !sectionRefs.current) return;
-  //   if (timelines.current)
-  //     // timelines.current.forEach((tl) => tl.kill(), (timelines.current = []));
-
-  //     console.log(sectionRefs.current, containerRef.current, "");
-  //   sectionRefs.current.forEach((section, i, arr) => {
-  //     if (i === arr.length - 1) return;
-  //     // let frame = frameProperty[i];
-  //     const timeline = gsap.timeline({
-  //       immediateRender: !1,
-  //       scrollTrigger: {
-  //         invalidateOnRefresh: !0,
-  //         trigger: section,
-  //         endTrigger: section,
-  //         yoyo: !0,
-  //         scrub: 1,
-  //         start: "top top",
-  //         end: "bottom top",
-  //         markers: true,
-  //       },
-  //       onStart: function () {},
-  //       onComplete: function (o) {
-  //         console.log(i, "Complete");
-  //         // n !== t.length - 2 && (n % 2 == 0 ? e.particlesMixin.filter.uniforms.texturePosition1.value = e.particlesMixin.objs[n + 2] : e.particlesMixin.filter.uniforms.texturePosition2.value = e.particlesMixin.objs[n + 2])
-  //       },
-  //       onReverseComplete: function () {
-  //         console.log(i, "reverse Complete");
-  //         // 0 !== n && (n % 2 == 0 ? e.particlesMixin.filter.uniforms.texturePosition2.value = e.particlesMixin.objs[n - 1] : e.particlesMixin.filter.uniforms.texturePosition1.value = e.particlesMixin.objs[n - 1])
-  //       },
-  //       // yoyo: true,
-  //     });
-
-  //     // let ps = particlesUniforms.current;
-  //     // const directionKeyframes = i % 2 === 0 ? [0, 1] : [1, 0];
-
-  //     // let tl = timeline.to(
-  //     //   ps.anime2,
-  //     //   {
-  //     //     keyframes: {
-  //     //       value: directionKeyframes,
-  //     //       ease: "none",
-  //     //       easeEach: "circ4.inOut",
-  //     //     },
-  //     //     duration: 1,
-  //     //     onUpdate: (v) => {
-  //     //       // console.log(v, directionKeyframes, ps.anime2);
-  //     //     },
-  //     //   },
-  //     //   "<"
-  //     // );
-
-  //     // const objectState = frame; //frameProperty[i];
-  //     // gsapCards(objectState, tl, "circ4.inOut", 1, i);
-  //     timelines.current.push(timeline);
-  //   });
-
-  //   const ctx = gsap.context(() => {}, containerRef);
-
-  //   return () => {
-  //     timelines.current.forEach((tl) => tl.kill(), (timelines.current = []));
-  //     ctx.revert();
-  //   };
-  // }, [containerRef, sectionRefs]);
 
   const [camera, setCamera] = useState({
     position: [0, 0, 1.5],
@@ -378,7 +141,7 @@ export default function Home() {
             <HeroSection />
           </section>
 
-          {frameOptions.map((frame, i) => (
+          {/* {frameOptions.map((frame, i) => (
             <section
               key={i}
               ref={(el) => (sectionRefs.current[i + 1] = el)}
@@ -387,7 +150,7 @@ export default function Home() {
             >
               {frame.component}
             </section>
-          ))}
+          ))} */}
         </div>
       </div>
     </>
