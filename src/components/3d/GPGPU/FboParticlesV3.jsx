@@ -88,8 +88,8 @@ const defaultModel = new THREE.Mesh(new THREE.PlaneGeometry());
 const intro_props = {
   obj: {
     position: [0, 0.0, 0],
-    rotation: [0, 0, -Math.PI / 12],
-    scale: [1, 1, 1],
+    rotation: [0, -Math.PI / 16, 0],
+    scale: [2, 2, 2],
   },
   mouse: {
     mouseActive: false,

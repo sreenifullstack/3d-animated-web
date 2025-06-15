@@ -47,6 +47,7 @@ import {
   TrackerProvider,
   useTrackerContext,
 } from "@/components/3d/FBO/TrackerSection";
+import { useSigmaLogo } from "./useSigmaLogo";
 
 const ParticleScene = forwardRef((props, ref) => {
   const { particleState } = useTrackerContext();
@@ -55,7 +56,6 @@ const ParticleScene = forwardRef((props, ref) => {
 
   useFrame(() => {
     let _state = particleState.current;
-    // console.log(_state);
     if (!_state) return;
     if (!_state.position || !_state.scale || !_state.rotation) return;
     const mesh = meshRef.current;
@@ -123,6 +123,8 @@ const frameOptions = [
 
 window.xss = {};
 
+useSigmaLogo;
+
 function SceneComponent({ id, type = "entry" }) {
   const { activeScene, setActiveScene, particleState } = useTrackerContext();
   const el = useRef();
@@ -144,6 +146,7 @@ function SceneComponent({ id, type = "entry" }) {
       if (scrollState.inViewport && inViewport) {
         // setIsInView(true);
         setWasInView(true);
+        console.log("Entering", id, visibility, progress, scrollState.viewport);
       }
 
       if (inViewport && visibility > 0.55 && visibility <= 1.5) {
@@ -193,19 +196,39 @@ function SceneComponent({ id, type = "entry" }) {
   }, [tracker, wasInView, particleState, activeScene, setActiveScene]);
 
   return (
-    <div className="box-border relative flex flex-wrap w-screen h-screen overflow-hidden justify-around items-center gap-4 p-2">
-      <div className="border border-red-600 max-h-full flex items-center justify-center">
-        {type === "entry" ? "heroScene" : "ExitScene"}
+    // Main container: full screen, column on mobile, row on desktop.
+    // gap-4 and p-2 for spacing.
+    <div
+      className="box-border relative flex flex-col h-screen w-screen overflow-hidden p-2 gap-4
+                    justify-start items-center                  /* Mobile: stack vertically, align items to start (top) */
+                    md:flex-row md:justify-around md:items-center /* Desktop: row, space around items, center vertically */
+                    "
+    >
+      <div
+        className="border border-red-600 w-full h-[25vh] flex items-center justify-center rounded-lg shadow-md
+                      md:w-1/2 md:h-full md:max-h-full        /* Desktop: half width, full height of parent, max height */
+                      "
+      >
+        {type === "entry" ? "Hero Scene" : "Exit Scene"}
       </div>
       <div
         ref={el}
-        className="aspect-square border border-green-600 w-1/2   max-w-[500px] max-h-[500px] flex items-center justify-center"
+        className="border border-green-600 w-full h-[75vh] flex items-center justify-center rounded-lg shadow-md
+                    md:w-1/2 md:h-full md:aspect-square md:max-w-[500px] md:max-h-[500px] /* Desktop: half width, full height, aspect, max-sizes */
+                    "
         style={{
-          // opacity: localVisibility,
           transition: "opacity 0.2s ease-out",
         }}
       >
-        {id} {tracker.inViewport ? "true" : "fakse"}
+        <p className="text-xl font-bold text-gray-700">
+          ID: <span className="text-blue-600">{id}</span> <br />
+          In Viewport:{" "}
+          <span
+            className={tracker.inViewport ? "text-green-500" : "text-red-500"}
+          >
+            {tracker.inViewport ? "True" : "False"}
+          </span>
+        </p>
       </div>
     </div>
   );
@@ -285,10 +308,11 @@ export default function Home() {
               <meshBasicMaterial color="red" />
             </mesh>
 
-            <OrbitControls
+            {/* <OrbitControls
+              enabled={false}
               enableZoom={false}
               domElement={parentHtmlRef.current}
-            />
+            /> */}
             <FboParticlesV2 activeSceneId={0} />
           </GlobalCanvas>
           <SmoothScrollbar>
