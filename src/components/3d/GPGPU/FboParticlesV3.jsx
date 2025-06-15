@@ -46,6 +46,7 @@ import { mapLinear } from "three/src/math/MathUtils";
 import { PostProcessing } from "./PostProcessing";
 import { ParticlesMaterial } from "./ParticlesMaterial";
 import { sceneConfigurations } from "./sceneConfigurations";
+import { useTrackerContext } from "../FBO/TrackerSection";
 
 // move to main thread
 // gsap.registerPlugin(useGSAP);
@@ -119,6 +120,7 @@ const FboParticles = memo(
         position = [0, 0, 0],
         rotation = [0, 0, 0],
         scale = [1, 1, 1],
+        opacity = 1,
       },
       ref
     ) => {
@@ -162,15 +164,20 @@ const FboParticles = memo(
             const index = i * size + j;
             const halfSize = size / 2;
 
-            const x = mapLinear(i % halfSize, 0, halfSize, -5, 5);
-            const y = mapLinear(j % halfSize, 0, halfSize, -5, 5);
-            _position.set(x, y, 0).multiplyScalar(2);
+            // const x = mapLinear(i % halfSize, 0, halfSize, -5, 5);
+            // const y = mapLinear(j % halfSize, 0, halfSize, -5, 5);
+
+            const x = mapLinear(Math.random(), 0, 1, -5, 5);
+            const y = mapLinear(Math.random(), 0, 1, -5, 5);
+            const z = mapLinear(Math.random(), 0, 1, -5, 5);
+
+            _position.set(x, y, z).multiplyScalar(2);
 
             // Position data (RGBA)
             positionData[4 * index] = _position.x;
             positionData[4 * index + 1] = _position.y;
             positionData[4 * index + 2] = _position.z;
-            positionData[4 * index + 3] = i > halfSize ? 2 : 1;
+            positionData[4 * index + 3] = 20; //i > halfSize ? 2 : 1;
 
             // Geometry attributes
             positions[3 * index] = _position.x;
@@ -431,8 +438,9 @@ const FboParticles = memo(
         uniforms.velocity.uOriginalPosition.value =
           originalPositionTex || initialTextures.position;
 
-        uniforms.velocity.intro.value = !originalPositionTex;
-        uniforms.position.intro.value = !originalPositionTex;
+        //
+        // uniforms.velocity.intro.value = !originalPositionTex;
+        // uniforms.position.intro.value = !originalPositionTex;
       }, [originalPositionTex, computeState]);
 
       useImperativeHandle(ref, () => ({
@@ -491,6 +499,7 @@ const FboParticles = memo(
                 depthWrite={false}
                 depthTest={false}
                 blending={THREE.AdditiveBlending}
+                opacity={opacity}
                 transparent
               />
             </points>
@@ -504,189 +513,223 @@ const FboParticles = memo(
 FboParticles.displayName = "FboParticlesV2";
 
 const data = [
-  { id: "sphere", model: new THREE.TorusKnotGeometry() },
-  { id: "plane", model: new THREE.PlaneGeometry(2, 2, 1) },
-  { id: "cone", model: new THREE.ConeGeometry(0.5, 2, 32) },
+  { id: "sphere", model: new THREE.TorusKnotGeometry(0.25) },
+  { id: "plane", model: new THREE.PlaneGeometry(1, 1, 1) },
+  { id: "cone", model: new THREE.ConeGeometry(0.5) },
   { id: "torus", model: new THREE.TorusGeometry() },
 ];
 
-const FboParticlesV2 = memo(
-  ({ width = 128, activeSceneId = null, ...props }) => {
-    const { size: viewport } = useThree();
-    const particlesRef = useRef();
-    const [gpuCompute, setGpuCompute] = useState(null);
-    const [particleSize, setParticleSize] = useState(0);
+const FboParticlesV2 = memo(({ width = 128, ...props }) => {
+  const particleGroupRef = useRef();
+  const { particleState, activeScene: activeSceneId } = useTrackerContext();
 
-    useEffect(() => {
-      if (particlesRef.current && !gpuCompute) {
-        setGpuCompute(particlesRef.current.computeState());
-      }
-    }, [particlesRef, gpuCompute]);
+  const meshRef = useRef();
+  console.log({ activeSceneId });
 
-    const mouseRef = useRef({
-      coord: new THREE.Vector3(),
-      force: 0,
-      introForce: 0,
-    });
+  const { size: viewport } = useThree();
+  const particlesRef = useRef();
+  const [gpuCompute, setGpuCompute] = useState(null);
+  const [particleSize, setParticleSize] = useState(0);
 
-    // const gpuCompute = useMemo(() => {
-    //   return particlesRef?.current?.computeState?.();
-    // }, [particlesRef.current]);
-    console.log(gpuCompute, (window.xx = gpuCompute));
-    const model = useGLTF(path);
+  useEffect(() => {
+    if (particlesRef.current && !gpuCompute) {
+      setGpuCompute(particlesRef.current.computeState());
+    }
+  }, [particlesRef, gpuCompute]);
 
-    const [size, setSize] = useState(512);
-    const [isIntro, setIntro] = useState(true);
+  const mouseRef = useRef({
+    coord: new THREE.Vector3(),
+    force: 0,
+  });
 
-    const textures = useMemo(() => {
-      if (!model) return null;
-      return [
-        {
-          id: 0,
-          ...sampleMixedMeshes(
-            model.meshes.sigma,
-            model.meshes.sigma_iray,
-            size,
-            0.85
-          ),
-        },
-        ...data.map((item, i) => {
-          return { id: i + 1, ...sampleMesh(item.model, size) };
-        }),
-      ];
-    }, [size, model]);
+  console.log(gpuCompute, (window.xx = gpuCompute));
+  const model = useGLTF(path);
 
-    const [config, setCongif] = useState(intro_props);
-    const [activeTexture, setActiveTexture] = useState(null);
+  const [size, setSize] = useState(512);
+  const [isIntro, setIntro] = useState(!true);
 
-    useEffect(() => {
-      if (isIntro) {
-        setCongif(intro_props);
-        setActiveTexture(null);
-      }
-    }, [isIntro]);
+  const textures = useMemo(() => {
+    if (!model) return null;
+    return [
+      {
+        id: 0,
+        ...sampleMixedMeshes(
+          model.meshes.sigma,
+          model.meshes.sigma_iray,
+          size,
+          0.85
+        ),
+      },
 
-    useEffect(() => {
-      if (isIntro) return;
-      if (!sceneConfigurations[activeSceneId]) {
-        // setIntro(true);
-        // mouseRef.current.introForce = 0;
-        // return;
-      }
-      if (activeSceneId !== null && textures?.[activeSceneId]) {
-        setCongif({ ...sceneConfigurations[activeSceneId] });
+      {
+        id: 1,
+        ...sampleMixedMeshes(
+          model.meshes.sigma,
+          model.meshes.sigma_iray,
+          size,
+          0.85
+        ),
+      },
+      {
+        id: 2,
+        ...sampleMixedMeshes(
+          model.meshes.sigma,
+          model.meshes.sigma_iray,
+          size,
+          0.85
+        ),
+      },
 
-        // console.log({ activeSceneId }, textures?.[activeSceneId].positionTexture);
-        // console.log(textures?.[activeSceneId], activeSceneId);
-        setActiveTexture(textures?.[activeSceneId] || null);
-      }
-      // console.log("");
-      // const currentConfig = sceneConfigurations[activeSceneId];
-    }, [activeSceneId, textures, isIntro]);
+      // ...data.map((item, i) => {
+      //   return { id: i + 1, ...sampleMesh(item.model, size) };
+      // }),
+    ];
+  }, [size, model]);
 
-    window.texture = textures;
+  const [config, setCongif] = useState(intro_props);
+  const [activeTexture, setActiveTexture] = useState(null);
 
-    // activeSceneId to swap orgianlposition if the sene is not into
+  useEffect(() => {
+    if (isIntro) {
+      setCongif(intro_props);
+      setActiveTexture(null);
+    }
+  }, [isIntro]);
 
-    useFrame(({ gl, clock }) => {
-      const { gpgpu, uniforms } = gpuCompute || {};
-      if (!gpgpu || !uniforms) return;
-    });
+  useEffect(() => {
+    if (isIntro) return;
+    if (!activeSceneId) {
+      setCongif(intro_props);
+      setActiveTexture(null);
+      return;
+    }
+    if (!sceneConfigurations[activeSceneId]) {
+      // setIntro(true);
+      // mouseRef.current.introForce = 0;
+      // return;
+    }
+    if (activeSceneId !== null && textures?.[activeSceneId]) {
+      setCongif({ ...sceneConfigurations[activeSceneId] });
 
-    window.z = {
-      config,
-      isIntro,
-      setIntro,
-      activeSceneId,
-      activeTexture,
-      textures,
-      setActiveTexture,
-    };
-    // console.log(window.z);
+      // console.log({ activeSceneId }, textures?.[activeSceneId].positionTexture);
+      // console.log(textures?.[activeSceneId], activeSceneId);
+      setActiveTexture(textures?.[activeSceneId] || null);
+    }
+    // console.log("");
+    // const currentConfig = sceneConfigurations[activeSceneId];
+  }, [activeSceneId, textures, isIntro]);
 
-    useEffect(() => {
-      const minScreenSize = 300; // Smallest expected screen (e.g., mobile)
-      const maxScreenSize = 2705; // Largest expected screen (e.g., desktop)
+  window.texture = textures;
 
-      const minPointSize = isIntro ? 1 : 0.5; // Size at `size = 0`
-      const maxPointSize = isIntro ? 2 : 0.55; // Size at `size = 1`
+  // activeSceneId to swap orgianlposition if the sene is not into
 
-      function mapRange(value, inMin, inMax, outMin, outMax) {
-        return ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
-      }
+  useFrame(({ gl, clock }) => {
+    const { gpgpu, uniforms } = gpuCompute || {};
+    if (!gpgpu || !uniforms) return;
 
-      const screenWidth = window.innerWidth;
-      const screenHeight = window.innerHeight;
+    let _state = particleState.current;
+    // console.log(_state);
+    if (!_state) return;
+    if (!_state.position || !_state.scale || !_state.rotation) return;
+    const mesh = particleGroupRef.current;
+    if (!mesh) return;
+    mesh.position.copy(_state.position);
+    mesh.scale.copy(_state.scale);
+  });
 
-      // Use the minimum of screenWidth and screenHeight for scaling
-      // This helps ensure the size scales appropriately for both portrait and landscape
-      const effectiveScreenDimension = Math.min(screenWidth, screenHeight);
+  window.z = {
+    config,
+    isIntro,
+    setIntro,
+    activeSceneId,
+    activeTexture,
+    textures,
+    setActiveTexture,
+  };
+  // console.log(window.z);
 
-      let dynamicSize = mapRange(
-        Math.min(effectiveScreenDimension, maxScreenSize), // Clamp to maxScreenSize
-        minScreenSize,
-        maxScreenSize,
-        minPointSize,
-        maxPointSize
-      );
-      if (screenWidth > 1700 && screenWidth < 1800) dynamicSize *= 1.85;
-      if (screenWidth > 1800 && screenWidth < 2200) dynamicSize *= 1.75;
-      if (screenWidth > 2200) dynamicSize *= 2;
+  useEffect(() => {
+    const minScreenSize = 300; // Smallest expected screen (e.g., mobile)
+    const maxScreenSize = 2705; // Largest expected screen (e.g., desktop)
 
-      setParticleSize(dynamicSize * 0.85);
-    }, [isIntro, viewport]);
-    return (
-      <>
-        <group {...props}>
-          <Bvh
-            enabled={isIntro}
-            onPointerMove={(e) => {
-              if (!e.intersections.length) return;
+    const minPointSize = isIntro ? 1 : 0.5; // Size at `size = 0`
+    const maxPointSize = isIntro ? 2 : 0.55; // Size at `size = 1`
 
-              mouseRef.current.introForce += 0.45;
-              if (mouseRef.current.introForce > 10) {
-                setIntro(false);
-              }
-            }}
-          >
-            <mesh visible={false}>
-              <primitive
-                object={new THREE.PlaneGeometry(1000, 1000)}
-                attach="geometry"
-              />
-              <meshBasicMaterial wireframe opacity={0.01} transparent />
-            </mesh>
-          </Bvh>
+    function mapRange(value, inMin, inMax, outMin, outMax) {
+      return ((value - inMin) * (outMax - outMin)) / (inMax - inMin) + outMin;
+    }
 
-          <FboParticles
-            ref={particlesRef}
-            size={512}
-            color1={config?.bg?.color1}
-            color2={config?.bg?.color2}
-            color3={config?.bg?.color3}
-            particleSize={particleSize} //config?.bg?.particleSize
-            minAlpha={config?.bg?.minAlpha}
-            maxAlpha={config?.bg?.maxAlpha}
-            originalPositionTex={activeTexture?.positionTexture}
-            originalGeometry={activeTexture?.geometry}
-            position={config?.obj?.position}
-            rotation={config?.obj?.rotation}
-            scale={config?.obj?.scale}
-            // blending={config.texProp?.blending}
-            // opacity={config.texProp?.opacity}
-          ></FboParticles>
-        </group>
-        <PostProcessing
-          // ref={pp_ref}
-          direction={new THREE.Vector3(1.5, 1)}
-          threshold={isIntro ? 0.15 : 0.058}
-          strength={isIntro ? 0.535 : 1.2}
-          radius={isIntro ? 0.535 : 1}
-        />
-      </>
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+
+    // Use the minimum of screenWidth and screenHeight for scaling
+    // This helps ensure the size scales appropriately for both portrait and landscape
+    const effectiveScreenDimension = Math.min(screenWidth, screenHeight);
+
+    let dynamicSize = mapRange(
+      Math.min(effectiveScreenDimension, maxScreenSize), // Clamp to maxScreenSize
+      minScreenSize,
+      maxScreenSize,
+      minPointSize,
+      maxPointSize
     );
-  }
-);
+    if (screenWidth > 1700 && screenWidth < 1800) dynamicSize *= 1.85;
+    if (screenWidth > 1800 && screenWidth < 2200) dynamicSize *= 1.75;
+    if (screenWidth > 2200) dynamicSize *= 2;
+
+    setParticleSize(dynamicSize * 0.85);
+  }, [isIntro, viewport]);
+  return (
+    <>
+      <group ref={particleGroupRef} {...props}>
+        <Bvh
+          enabled={isIntro}
+          onPointerMove={(e) => {
+            if (!e.intersections.length) return;
+
+            mouseRef.current.introForce += 0.45;
+            if (mouseRef.current.introForce > 10) {
+              setIntro(false);
+            }
+          }}
+        >
+          <mesh visible={false}>
+            <primitive
+              object={new THREE.PlaneGeometry(1000, 1000)}
+              attach="geometry"
+            />
+            <meshBasicMaterial wireframe opacity={0.01} transparent />
+          </mesh>
+        </Bvh>
+
+        <FboParticles
+          ref={particlesRef}
+          size={512}
+          color1={config?.bg?.color1}
+          color2={config?.bg?.color2}
+          color3={config?.bg?.color3}
+          particleSize={particleSize} //config?.bg?.particleSize
+          minAlpha={config?.bg?.minAlpha}
+          maxAlpha={config?.bg?.maxAlpha}
+          originalPositionTex={activeTexture?.positionTexture}
+          originalGeometry={activeTexture?.geometry}
+          position={config?.obj?.position}
+          rotation={config?.obj?.rotation}
+          scale={config?.obj?.scale}
+          // blending={config.texProp?.blending}
+          opacity={1}
+        ></FboParticles>
+      </group>
+      <PostProcessing
+        // ref={pp_ref}
+        direction={new THREE.Vector3(1.5, 1)}
+        threshold={isIntro ? 0.15 : 0.058}
+        strength={isIntro ? 0.535 : 1.2}
+        radius={isIntro ? 0.535 : 1}
+      />
+    </>
+  );
+});
 
 useGLTF.preload(path);
 

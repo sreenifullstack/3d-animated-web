@@ -1,27 +1,46 @@
-import { useTracker } from "@14islands/r3f-scroll-rig";
+import { useScrollRig, useTracker } from "@14islands/r3f-scroll-rig";
 import { useControls } from "leva";
-import React, { createContext, useContext, useRef, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { Euler, Vector3 } from "three";
 
 const TrackerContext = createContext();
 
 export const TrackerProvider = ({ children }) => {
-  const containerRef = useRef(null);
+  const [activeScene, setActiveScene] = useState("");
+  const particleGroupRef = useRef();
 
-  const [sectionEl, setSectionEl] = useState(null);
-  const [currentScene, setCurrentScene] = useState();
+  const particleState = useRef({
+    position: new Vector3(),
+    scale: new Vector3(),
+    rotation: new Euler(0, 0, 0, "XYZ"),
+  });
 
-  const tracker = useTracker(containerRef);
+  useEffect(() => {
+    console.log(activeScene, "sif");
+  }, [activeScene]);
 
-  const timelines = useRef([]);
+  // const setActiveScene = (scene) => {
+  //   activeScene.current = scene;
+  // };
+
+  //   window.a = setActiveScene;
+  useEffect(() => {
+    console.log("active Scene", activeScene);
+  }, [activeScene]);
 
   return (
     <TrackerContext.Provider
       value={{
-        containerRef,
-        sectionEl,
-        tracker,
-        currentScene,
-        setCurrentScene,
+        activeScene,
+        setActiveScene,
+        particleGroupRef,
+        particleState,
       }}
     >
       {children}
@@ -31,7 +50,7 @@ export const TrackerProvider = ({ children }) => {
 
 // Custom hook to use the section context
 export const useTrackerContext = () => {
-  const context = useContext(SectionContext);
+  const context = useContext(TrackerContext);
   if (!context) {
     throw new Error("useTrackerContext must be used within a TrackerProvider");
   }

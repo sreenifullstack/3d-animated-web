@@ -8,6 +8,8 @@ uniform vec3 uColor3;
 
 uniform float uMinAlpha;
 uniform float uMaxAlpha;
+uniform float uOpacity;
+
 // uniform vec3 uColor = vec3(0.808, 0.647, 0.239);
 // uniform float uMinAlpha = 0.04;
 // uniform float uMaxAlpha = 0.8;
@@ -25,7 +27,7 @@ void main() {
 	if (center > 0.5) { discard; }
     
 	if(texture2D( uVelocityTexture, vUv ).w == 2.){
-		gl_FragColor = vec4(uColor1, .055);
+		gl_FragColor = vec4(uColor1, .055 * uOpacity );
 		return;
 	}
     
@@ -35,4 +37,5 @@ void main() {
 	}
 
 	gl_FragColor =  outColor;//vec4(outColor, velocityAlpha);
+	gl_FragColor.a *=uOpacity; 
 }

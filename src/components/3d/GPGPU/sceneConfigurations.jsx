@@ -4,7 +4,7 @@ export const sceneConfigurations = [
   // 1
   {
     obj: {
-      position: [0.65, -0.029, 0],
+      position: [0, -0, 0],
       rotation: [0, Math.PI / 16, 0],
       scale: [0.95, 0.95, 0.95],
     },
@@ -15,7 +15,7 @@ export const sceneConfigurations = [
       color1: "#54aba5",
       color2: "#274045",
       color3: "#375d54",
-      particleSize: 1.7,
+      particleSize: 0.025,
       minAlpha: 0.04,
       maxAlpha: 0.8,
     },
@@ -27,7 +27,7 @@ export const sceneConfigurations = [
   {
     obj: {
       position: [0, 0, 0],
-      rotation: [0, Math.PI / 16, Math.PI / 2],
+      rotation: [0, Math.PI / 16, 0],
       scale: [1, 1, 1],
     },
     mouse: {
@@ -46,7 +46,7 @@ export const sceneConfigurations = [
   {
     obj: {
       position: [0, 0, 0],
-      rotation: [0, 0, 0],
+      rotation: [0, Math.PI / 16, 0],
       scale: [1, 1, 1],
     },
     mouse: {

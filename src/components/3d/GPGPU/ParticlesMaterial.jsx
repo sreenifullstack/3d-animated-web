@@ -30,6 +30,7 @@ const OPTS = {
   Color3: 0x222222,
   minAlpha: 0.04,
   maxAlpha: 0.8,
+  opacity: 1,
 };
 
 export const ParticlesMaterial = memo(
@@ -45,6 +46,7 @@ export const ParticlesMaterial = memo(
         color3 = OPTS.Color3,
         minAlpha = OPTS.minAlpha,
         maxAlpha = OPTS.maxAlpha,
+        opacity = OPTS.opacity,
         ...props
       },
       ref
@@ -59,13 +61,14 @@ export const ParticlesMaterial = memo(
         uColor3: { value: new THREE.Color(color3) },
         uMinAlpha: { value: minAlpha },
         uMaxAlpha: { value: maxAlpha },
+        uOpacity: { value: opacity },
         uTime: { value: 0 },
         uResolution: { value: new THREE.Vector2(1, 1) },
         uPixelRatio: { value: 1 },
       });
 
       const { size: viewport, gl } = useThree();
-      console.log(viewport);
+
       useEffect(() => {
         const uniforms = uniformsRef.current;
         if (!uniforms) return;
@@ -112,6 +115,7 @@ export const ParticlesMaterial = memo(
           const alphaProxy = {
             minAlpha: uniforms.uMinAlpha.value,
             maxAlpha: uniforms.uMaxAlpha.value,
+            opacity: uniforms.uOpacity.value,
           };
 
           colorProxys.forEach(({ uniform, target }) => {
@@ -136,11 +140,14 @@ export const ParticlesMaterial = memo(
           gsap.to(alphaProxy, {
             minAlpha: minAlpha,
             maxAlpha: maxAlpha,
+            opacity: opacity,
             duration: 1.0, // Adjust duration for desired smoothness
             ease: "power2.out", // Choose an appropriate ease
             onUpdate: () => {
               uniforms.uMinAlpha.value = alphaProxy.minAlpha;
               uniforms.uMaxAlpha.value = alphaProxy.maxAlpha;
+              uniforms.uOpacity.value = alphaProxy.opacity;
+
               // console.log(uniforms.uMaxAlpha.value, "alpha max");
             },
           });
@@ -153,6 +160,7 @@ export const ParticlesMaterial = memo(
             color3,
             minAlpha,
             maxAlpha,
+            opacity,
             uniformsRef.current,
           ],
           // scope: materialRef,
@@ -173,6 +181,7 @@ export const ParticlesMaterial = memo(
           uniforms={uniformsRef.current}
           vertexShader={vertexShader}
           fragmentShader={fragmentShader}
+          transparent={true}
           {...props}
         />
       );

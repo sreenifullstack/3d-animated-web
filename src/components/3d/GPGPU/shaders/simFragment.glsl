@@ -60,9 +60,9 @@ void main() {
 	if(intro && _velocity.w == 1.) {
 	float time = uTime * 0.01;		
 	float speed = snoise(vec3(vUv,time)) * 0.01;
-    vec3 noise = curlNoise(vec3(vUv*100.,time ))*0.25; // Added time-based animation		
-	 position.y +=noise.x; 
-	 position.x +=noise.x; 
+  // vec3 noise = curlNoise(vec3(vUv*100.,time ))*0.25; // Added time-based animation		
+	//  position.y +=noise.x; 
+	//  position.x +=noise.x; 
 	// position.z +=noise.z; 
 	}
 
