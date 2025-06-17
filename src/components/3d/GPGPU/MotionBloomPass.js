@@ -356,7 +356,8 @@ class MotionBloomPass extends Pass {
 						diffuseSum += (sample1 + sample2) * w;
 						weightSum += 2.0 * w;
 					}
-					gl_FragColor = vec4(diffuseSum/weightSum, 1.0);
+					gl_FragColor = vec4(diffuseSum/weightSum, 1.);
+
 				}`,
     });
   }

@@ -62,7 +62,7 @@ export function sampleMixedMeshes(
   const positions = new Float32Array(3 * count);
   const uvs = new Float32Array(2 * count);
   const positionData = new Float32Array(4 * count);
-  const velocityData = new Float32Array(4 * count).fill(0);
+  // const velocityData = new Float32Array(4 * count).fill(0);
 
   // Create samplers for both meshes
   const sampler1 = new MeshSurfaceSampler(
@@ -117,7 +117,7 @@ export function sampleMixedMeshes(
     positions,
     uvs,
     positionTexture: createDataTexture(positionData),
-    velocityTexture: createDataTexture(velocityData),
+    // velocityTexture: createDataTexture(velocityData),
     geometry: mergeMeshGeometries(mesh1.geometry, mesh2.geometry),
   };
 }

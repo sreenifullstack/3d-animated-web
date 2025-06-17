@@ -1,46 +1,137 @@
+import { useSigmaLogo, useSplaterTexture } from "@/app/useSigmaLogo";
 import { useScrollRig, useTracker } from "@14islands/r3f-scroll-rig";
 import { useControls } from "leva";
 import React, {
   createContext,
+  useCallback,
   useContext,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
 import { Euler, Vector3 } from "three";
+import {
+  useSceneConfig,
+  SCENE_TYPES,
+  validateSceneConfig,
+  createSceneConfig,
+} from "../GPGPU/SceneConfigManager";
 
 const TrackerContext = createContext();
 
 export const TrackerProvider = ({ children }) => {
-  const [activeScene, setActiveScene] = useState("");
-  const particleGroupRef = useRef();
+  const defaultConfig = useMemo(
+    () => createSceneConfig(SCENE_TYPES.DEFAULT),
+    []
+  );
+  const introConfig = useMemo(() => createSceneConfig(SCENE_TYPES.INTRO), []);
 
+  const [fboState, setFboState] = useState(false);
+  const [activeConfig, setActiveConfig] = useState(defaultConfig);
+  const [bgConfig, setBgConfig] = useState(defaultConfig);
+  const [count, setCount] = useState(512);
+  const [config, setConfig] = useState(defaultConfig);
+  const [activeTexture, setActiveTexture] = useState(null);
+  const [isIntro, setIntro] = useState(true);
+  const [postProcessing, setPostProcessing] = useState(
+    introConfig.postProcessing
+  );
+  // Refs
+  const fboNdcCoord = useRef(new Vector3());
+  const particleGroupRef = useRef();
   const particleState = useRef({
     position: new Vector3(),
     scale: new Vector3(),
     rotation: new Euler(0, 0, 0, "XYZ"),
+    mouseRef: new Vector3(),
   });
 
+  // Custom hooks
+  const _sigma = useSigmaLogo(count);
+  const _splater = useSplaterTexture(count);
+  window.config = config;
+  // Effects
   useEffect(() => {
-    console.log(activeScene, "sif");
-  }, [activeScene]);
+    const currentConfig = isIntro ? introConfig : config;
+    setPostProcessing(currentConfig.postProcessing);
+  }, [isIntro, config, introConfig]);
 
-  // const setActiveScene = (scene) => {
-  //   activeScene.current = scene;
-  // };
-
-  //   window.a = setActiveScene;
   useEffect(() => {
-    console.log("active Scene", activeScene);
-  }, [activeScene]);
+    setConfig(isIntro ? introConfig : activeConfig);
+    setBgConfig(isIntro ? introConfig : activeConfig);
+    setActiveTexture(null);
+  }, [isIntro, introConfig]);
+
+  useEffect(() => {
+    if (isIntro) return;
+    if (!_splater || !_sigma) return;
+
+    setBgConfig(activeConfig);
+    if (!fboState && !isIntro && _splater) {
+      setConfig(defaultConfig);
+      setActiveTexture(_splater);
+      return;
+    }
+
+    if (fboState && _sigma.positionTexture) {
+      // setConfig(newConfig);
+      const newConfig = activeConfig || defaultConfig;
+      setConfig(newConfig);
+
+      setActiveTexture(_sigma);
+      return;
+    }
+
+    // setConfig(activeConfig);
+  }, [isIntro, fboState, activeConfig, introConfig]);
+
+  // Handlers
+  const activeSceneHandler = useCallback(
+    (props) => {
+      console.log(props, ":props");
+      if (!props) {
+        setFboState(false);
+        // setActiveConfig(defaultConfig);
+        return;
+      }
+
+      const { fboState = false, config = defaultConfig } = props;
+      setFboState(fboState);
+      setActiveConfig(config);
+    },
+    [defaultConfig]
+  );
+
+  const setIntroWithConfig = useCallback(
+    (introState) => {
+      setIntro(introState);
+      if (introState) {
+        setConfig(introConfig);
+      }
+    },
+    [introConfig]
+  );
 
   return (
     <TrackerContext.Provider
       value={{
-        activeScene,
-        setActiveScene,
+        count,
         particleGroupRef,
+        fboNdcCoord,
         particleState,
+        fboState,
+        activeTexture,
+        config,
+        activeConfig,
+        bgConfig,
+        isIntro,
+        setIntro: setIntroWithConfig,
+        postProcessing,
+        // sceneType,
+        activeSceneHandler,
+        createSceneConfig,
+        validateSceneConfig,
       }}
     >
       {children}
@@ -48,7 +139,6 @@ export const TrackerProvider = ({ children }) => {
   );
 };
 
-// Custom hook to use the section context
 export const useTrackerContext = () => {
   const context = useContext(TrackerContext);
   if (!context) {

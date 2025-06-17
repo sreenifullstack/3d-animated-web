@@ -3,9 +3,11 @@ import * as THREE from "three";
 import { MotionBloomPass } from "./MotionBloomPass";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
-import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass";
+// import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass";
+
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
+import { OutputPass } from "./OutputPass";
 const {
   useEffect,
   useMemo,
@@ -14,15 +16,6 @@ const {
   useImperativeHandle,
 } = require("react");
 
-// this.params = {
-//   threshold: 0.058,
-//   strength: 1.2,
-//   radius: 0,
-//   directionX: 1.5,
-//   directionY: 1,
-// };
-
-useGSAP;
 export const PostProcessing = forwardRef(
   (
     {
@@ -145,7 +138,7 @@ export const PostProcessing = forwardRef(
       if (composer) {
         composer.render(delta);
       }
-    }, 1); // Render priority 1 (after main scene)
+    }); // Render priority 1 (after main scene)
 
     // return null;
     return (

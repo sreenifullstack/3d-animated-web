@@ -122,7 +122,6 @@
   }
 }
 
-
 html.has-scroll-smooth {
   overflow: auto;
 }
@@ -143,8 +142,14 @@ html.has-scroll-dragging {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-fadeIn {
@@ -153,4 +158,14 @@ html.has-scroll-dragging {
 
 .fade-in-black {
   opacity: 1 !important;
+}
+
+@media screen and (min-width: 2000px) {
+  .sigma {
+    width: 40vw;
+    height: 40vw;
+    aspect-ratio: 1 / 1;
+    max-width: 1000px;
+    max-height: 1000px;
+  }
 }

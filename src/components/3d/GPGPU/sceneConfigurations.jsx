@@ -6,7 +6,7 @@ export const sceneConfigurations = [
     obj: {
       position: [0, -0, 0],
       rotation: [0, Math.PI / 16, 0],
-      scale: [0.95, 0.95, 0.95],
+      scale: [1, 1, 1],
     },
     mouse: {
       mouseActive: undefined,
