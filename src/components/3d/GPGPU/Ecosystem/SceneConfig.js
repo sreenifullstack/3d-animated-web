@@ -123,6 +123,7 @@ options.chains = {
   }),
   nodelName: _CHAINS,
   logos: _CHAIN_Logos,
+  order: 1,
 };
 
 options.tradings = {
@@ -143,6 +144,7 @@ options.tradings = {
   }),
   nodelName: _TRADING,
   logos: _Trading_Logos,
+  order: 2,
 };
 
 options.investments = {
@@ -163,6 +165,7 @@ options.investments = {
   }),
   nodelName: _INVESTMENT,
   logos: _INVESTMENT_Logos,
+  order: 3,
 };
 
 options.wallets = {
@@ -183,6 +186,7 @@ options.wallets = {
   }),
   nodelName: _WALLETS,
   logos: _WALLETS_Logos,
+  order: 4,
 };
 
 export default options;

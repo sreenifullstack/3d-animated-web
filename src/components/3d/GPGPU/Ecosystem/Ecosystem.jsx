@@ -129,13 +129,10 @@ export function Ecosystem({ id = "_Ecosystem" }) {
   }, []);
 
   const handleActiveScene = useCallback(
-    ({ fboTextures, config, id, index = 0 }) => {
-      // console.log("Active scene changed:", id, index, fboTextures, config);
+    ({ index = 0 }) => {
       setActiveSceneIndex(index);
       const map = sceneDataMaps?.current?.[index];
-      // setActiveSceneIndex(index);
       setActiveSceneMap(map);
-      console.log(index, "active");
     },
     [setActiveSceneIndex, setActiveSceneId]
   );
@@ -154,8 +151,7 @@ export function Ecosystem({ id = "_Ecosystem" }) {
     let maps = activeSceneMap;
     if (!maps) return;
     const { fboTextures, config } = maps;
-    if (!fboTextures && 1) {
-    }
+
     activeSceneHandler({
       id,
       fboState: true,
@@ -191,6 +187,7 @@ export function Ecosystem({ id = "_Ecosystem" }) {
 
     setActiveSceneId(id);
 
+    // initial auto triiger
     if (activeSceneIndex == 0) {
       handleActiveScene({ index: 0 });
     }
@@ -205,7 +202,7 @@ export function Ecosystem({ id = "_Ecosystem" }) {
     const _position = new THREE.Vector3();
     const _scale = new THREE.Vector3();
 
-    const { inViewport, scrollState, position, scale } = tracker;
+    // const { inViewport, scrollState, position, scale } = tracker;
 
     _position.setFromMatrixPosition(meshRef.current.matrixWorld);
     _scale.setFromMatrixScale(meshRef.current.matrixWorld);
@@ -225,33 +222,42 @@ export function Ecosystem({ id = "_Ecosystem" }) {
   useEffect(() => {
     const unsubscribe = onScroll(handleScroll);
     handleScroll();
-    return unsubscribe;
+
+    // temp fix for resize issue  for sticky scroll
+    const resize = () => {
+      setTimeout(() => {
+        handleScroll();
+      }, 100);
+    };
+    window.xx = resize;
+    window.addEventListener("resize", resize);
+
+    return () => window.removeEventListener(resize), unsubscribe;
   }, [tracker, handleScroll, onScroll, isInView]);
 
   const scrollTrackerComponent = useMemo(() => {
-    return Object.keys(options).map((key, index) => {
-      let option = options[key];
-
-      return (
-        <ScrollSection
-          options={option}
-          container={rootRef.current}
-          index={index}
-          key={`scroll-scene-${index}`}
-          handleActiveScene={handleActiveScene}
-          registerScene={registerScene}
-          registerHtml={registerHtml}
-          ref={(el) => {
-            if (!el) return;
-            scrollElements.current[index] = el;
-            return el;
-          }}
-        />
-      );
-    });
+    return Object.values(options)
+      .sort((a, b) => a.order - b.order)
+      .map((option, index) => {
+        return (
+          <ScrollSection
+            options={option}
+            container={rootRef.current}
+            index={index}
+            key={`scroll-scene-${index}`}
+            handleActiveScene={handleActiveScene}
+            registerScene={registerScene}
+            registerHtml={registerHtml}
+            ref={(el) => {
+              if (!el) return;
+              scrollElements.current[index] = el;
+              return el;
+            }}
+          />
+        );
+      });
   }, [rootRef]);
 
-  console.log(scrollTrackerComponent);
   return (
     <>
       <div ref={rootRef} className="relative border-2 border-red-500">
@@ -259,42 +265,27 @@ export function Ecosystem({ id = "_Ecosystem" }) {
           ref={el}
           className="sticky flex-col top-0  left-0 z-10 flex w-[98%] h-[95vh] items-center justify-center text-4xl text-amber-300"
         >
-          {
-            <ScrollElements
-              options={options.chains}
-              id={0}
-              activeSceneId={activeSceneIndex}
-            />
-          }
-          <ScrollElements
-            options={options.tradings}
-            id={1}
-            activeSceneId={activeSceneIndex}
-          />
-          <ScrollElements
-            options={options.wallets}
-            id={2}
-            activeSceneId={activeSceneIndex}
-          />
-          <ScrollElements
-            options={options.investments}
-            id={3}
-            activeSceneId={activeSceneIndex}
-          />
+          {Object.values(options)
+            .sort((a, b) => a.order - b.order)
+            .map((option, index) => {
+              return (
+                <ScrollElements
+                  options={option}
+                  key={option.order}
+                  id={index}
+                  activeSceneId={activeSceneIndex}
+                />
+              );
+            })}
 
-          <div
-            // rootRef remains here as per your constraint
-            className="sticky left-0 z-11 flex w-[98%] h-[25vh] items-center justify-center  text-4xl text-amber-300"
-          >
-            <div className="bg-blue-600 text-5xl opacity-0">1Trading</div>
-          </div>
+          <div className="sticky left-0 z-11 flex w-[98%] h-[25vh] items-center justify-center  text-4xl text-amber-300"></div>
         </div>
 
         {scrollTrackerComponent}
+
+        {/* Extened Scroll ( delay last slide )  */}
         <div className="h-[50vh]">
-          <div className="opacity-0 flex h- w-full items-center justify-center text-4xl text-amber-300">
-            Extened Scroll
-          </div>
+          <div className="opacity-0 flex h- w-full items-center justify-center text-4xl text-amber-300"></div>
         </div>
 
         <UseCanvas>
