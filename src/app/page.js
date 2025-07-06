@@ -1,6 +1,13 @@
 "use client";
-import { useRef, useState, useEffect, useMemo, forwardRef } from "react";
-import { Canvas, useThree } from "@react-three/fiber";
+import {
+  useRef,
+  useState,
+  useEffect,
+  useMemo,
+  forwardRef,
+  useCallback,
+} from "react";
+import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import * as THREE from "three";
 
 import {
@@ -8,24 +15,46 @@ import {
   ScrollScene,
   UseCanvas,
   SmoothScrollbar,
+  // StickyScrollScene,
   useTracker,
   useScrollbar,
 } from "@14islands/r3f-scroll-rig";
-import {
-  TrackerProvider,
-  useTrackerContext,
-} from "@/components/3d/FBO/TrackerSection";
+import { StickyScrollScene } from "@14islands/r3f-scroll-rig/powerups";
+
 import {
   CombinedPostProcessing,
-  FboParticlesV2,
-} from "@/components/3d/GPGPU/FboParticlesV3";
+  FboParticlesWrapper,
+} from "@/components/3d/GPGPU/FboParticles";
 import {
   SCENE_TYPES,
   createSceneConfig,
 } from "@/components/3d/GPGPU/SceneConfigManager";
-import { MergedBlobScene } from "@/components/3d/GPGPU/MergedBlobScene";
-import { SceneComponent } from "./SceneComponent";
+import { BlobBackground } from "@/components/3d/GPGPU/BlobBackground";
+
 import Header from "@/components/header";
+import { Html, Stats } from "@react-three/drei";
+import { SceneComponent } from "@/components/3d/GPGPU/SceneComponent";
+import {
+  TrackerProvider,
+  useTrackerContext,
+} from "@/components/3d/GPGPU/TrackerSection";
+import { generateUUID } from "three/src/math/MathUtils";
+import {
+  useChainLogo,
+  useSigmaLogo,
+  useTextGeometry,
+  useWalletLogo,
+} from "@/components/3d/GPGPU/useSigmaLogo";
+import {
+  progress,
+  useInView,
+  useMotionValueEvent,
+  useScroll,
+} from "framer-motion";
+import { cn } from "@/lib/utils";
+import Image from "next/image";
+import { Ecosystem } from "@/components/3d/GPGPU/Ecosystem/Ecosystem";
+// import { SceneComponent } from "@/components/3d/GPGPU/SceneComponent";
 
 export default function App() {
   const eventSource = useRef();
@@ -44,7 +73,7 @@ export default function App() {
               alpha: true,
             }}
           >
-            <MergedBlobScene />
+            <BlobBackground />
           </Canvas>
         </div>
 
@@ -52,7 +81,7 @@ export default function App() {
           eventSource={eventSource}
           eventPrefix="client"
           scaleMultiplier={1}
-          camera={{ fov: 45 }}
+          camera={{ fov: 50 }}
           className="mix-blend-screen"
           style={{ pointerEvents: "none" }}
           gl={{
@@ -66,24 +95,27 @@ export default function App() {
             alpha: true,
           }}
         >
-          <FboParticlesV2 />
+          {/* <group scale={[100, 100, 100]} rotation={[Math.PI / 4, 0, 0]}>
+            <Html transform>
+              <div className=" bg-red-500">Hello dev</div>
+            </Html>
+            <gridHelper />
+          </group> */}
+          <FboParticlesWrapper />
           <CombinedPostProcessing />
-
-          {/* Children from UseCanvas are automatically injected here */}
+          <Stats />
         </GlobalCanvas>
         <SmoothScrollbar>
           {(bind) => (
             <div {...bind}>
-              {/* <EntryComponent id={1} type="sigma" /> */}
-
               <HeroComponent />
               <section className="h-screen">
-                <h1>Basic &lt;ScrollScene/&gt; example</h1>
+                <h1>Secound Section</h1>
               </section>
-              <GradientSectionSwap />
+              <Ecosystem />
 
               <section className="h-screen">
-                <h1>Basic &lt;ScrollScene/&gt; example</h1>
+                <h1>Basic &lt;fourth Section &gt; example</h1>
               </section>
 
               <GradientSectionSwap />
@@ -177,13 +209,66 @@ function HeroComponent() {
       },
     });
   }, []);
-
+  const uuid = useMemo(() => generateUUID(), []);
+  let { count } = useTrackerContext();
+  const fboTextures = useSigmaLogo(count);
   return (
-    <SceneComponent config={config} type="sigma">
+    <SceneComponent config={config} fboTextures={fboTextures} id={uuid}>
       <HeroContent />
     </SceneComponent>
   );
 }
+
+const ZscrollContent = forwardRef(({ activeState, type }, ref) => {
+  return (
+    <>
+      <div className="relative  border-2 border-red-100">
+        <div className=" sticky top-[50vh] left-0 z-10 flex h-screen w-full items-center justify-center  text-4xl text-amber-300">
+          Fixed
+          <div className="w-1/3 h-1/3 bg-red-200"> Trading </div>
+        </div>
+
+        <div className="flex flex-col items-center gap-4 pt-20">
+          <div className="flex h-screen w-full items-center justify-center text-4xl text-amber-300">
+            2
+          </div>
+
+          <div className="flex h-screen w-full items-center justify-center text-4xl text-amber-300">
+            3
+          </div>
+
+          <div className="flex h-screen w-full items-center justify-center text-4xl text-amber-300">
+            4
+          </div>
+
+          <div className="flex h-screen w-full items-center justify-center text-4xl text-amber-300">
+            5
+          </div>
+        </div>
+      </div>
+    </>
+  );
+});
+
+let colorsPallets = [
+  // intro
+  { color1: "#54aba5", color2: "#274045", color3: "#375d54" },
+
+  // A
+  { color1: "#1c93b0", color2: "#22244e", color3: "#1d4e4e" },
+
+  // B
+  { color1: "#eaad8b", color2: "#4b1122", color3: "#000000" },
+
+  // C
+  { color1: "#caabaa", color2: "#945a24", color3: "#614933" },
+
+  // D
+  { color1: "#4f335b", color2: "#187c7c", color3: "#623409" },
+
+  // E
+  { color1: "#447274", color2: "#1b3729", color3: "#000000" },
+];
 
 function FooterComponent() {
   // Use the new scene configuration system
@@ -215,9 +300,12 @@ function FooterComponent() {
       },
     });
   }, []);
+  const uuid = useMemo(() => generateUUID(), []);
+  const { count } = useTrackerContext();
+  const fboTextures = useSigmaLogo(count);
 
   return (
-    <SceneComponent config={config} type="sigma">
+    <SceneComponent config={config} fboTextures={fboTextures} id={uuid}>
       <HeroContent />
     </SceneComponent>
   );
@@ -252,39 +340,20 @@ const SectionContent = forwardRef(({ config = {}, type = "" }, ref) => {
   );
 });
 
-let colors = [
-  // intro
-  { color1: "#54aba5", color2: "#274045", color3: "#375d54" },
-
-  // A
-  { color1: "#1c93b0", color2: "#22244e", color3: "#1d4e4e" },
-
-  // B
-  { color1: "#eaad8b", color2: "#4b1122", color3: "#000000" },
-
-  // C
-  { color1: "#caabaa", color2: "#945a24", color3: "#614933" },
-
-  // D
-  { color1: "#4f335b", color2: "#187c7c", color3: "#623409" },
-
-  // E
-  { color1: "#447274", color2: "#1b3729", color3: "#000000" },
-];
-
 function GradientSectionSwap() {
+  const uuid = useMemo(() => generateUUID(), []);
   const config = useMemo(() => {
     let _config = createSceneConfig(SCENE_TYPES.SECTION, {
       bg: {
-        ...colors[Math.floor(Math.random() * 5)],
-        uBlackAlpha: 0,
+        ...colorsPallets[Math.floor(Math.random() * 5)],
+        uBlackAlpha: 0, // enable gradient on whole scene
       },
     });
     // _config.bg.uBlackAlpha = 0;
     return _config;
   }, []);
   return (
-    <SceneComponent config={config} type="section">
+    <SceneComponent config={config} id={uuid} type="section">
       <SectionContent config={config} />
     </SceneComponent>
   );

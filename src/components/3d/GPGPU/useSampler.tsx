@@ -9,7 +9,7 @@ const mergeMeshGeometries = (geo1, geo2) => {
   return mergeGeometries([geo1, geo2]);
 };
 
-export function sampleMesh(mesh: THREE.Mesh, size: number) {
+export function sampleMesh(mesh: THREE.Mesh, size: number, spread = false) {
   const count = size * size;
   const positions = new Float32Array(3 * count);
   const uvs = new Float32Array(2 * count);
@@ -24,7 +24,13 @@ export function sampleMesh(mesh: THREE.Mesh, size: number) {
   for (let i = 0; i < size; i++) {
     for (let j = 0; j < size; j++) {
       const index = i * size + j;
-      sampler.sample(_pos);
+      if (spread && Math.random() < 0.05) {
+        _pos.x = (Math.random() - 0.5) * 100; //(Math.random() - 0.5) * 50;
+        _pos.y = (Math.random() - 0.5) * 100; //(Math.random() - 0.5) * 50;
+        _pos.z = (Math.random() - 0.5) * 100; //(Math.random() - 0.5) * 50;
+      } else {
+        sampler.sample(_pos);
+      }
       positionData.set([_pos.x, _pos.y, _pos.z, 11], index * 4);
       positions.set([_pos.x, _pos.y, _pos.z], index * 3);
       uvs.set([j / (size - 1), i / (size - 1)], index * 2);

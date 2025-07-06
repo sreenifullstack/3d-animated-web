@@ -3,11 +3,9 @@ import * as THREE from "three";
 import { MotionBloomPass } from "./MotionBloomPass";
 import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
 import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
-// import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass";
-
+import { OutputPass } from "three/examples/jsm/postprocessing/OutputPass";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { OutputPass } from "./OutputPass";
 const {
   useEffect,
   useMemo,

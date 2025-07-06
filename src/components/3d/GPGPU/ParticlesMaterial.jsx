@@ -66,7 +66,7 @@ export const ParticlesMaterial = memo(
         uResolution: { value: new THREE.Vector2(1, 1) },
         uPixelRatio: { value: 1 },
       });
-
+      window.u = uniformsRef.current;
       const { size: viewport, gl } = useThree();
 
       useEffect(() => {
@@ -141,7 +141,7 @@ export const ParticlesMaterial = memo(
             minAlpha: minAlpha,
             maxAlpha: maxAlpha,
             opacity: opacity,
-            duration: 1.0, // Adjust duration for desired smoothness
+            duration: 5.0, // Adjust duration for desired smoothness
             ease: "power2.out", // Choose an appropriate ease
             onUpdate: () => {
               uniforms.uMinAlpha.value = alphaProxy.minAlpha;
