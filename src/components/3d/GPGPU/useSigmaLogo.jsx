@@ -1,6 +1,6 @@
 "use client";
 const path = "/models/sigmaV5.glb";
-const logosPath = "/models/logos.glb";
+const logosPath = "/models/logos2.glb";
 const textedPath = "/models/WALLETS.glb";
 import {
   sampleMesh,

@@ -138,7 +138,7 @@ options.tradings = {
     obj: {
       position: [0, 0, 0],
       rotation: [0, 0, 0],
-      scale: [1, 1, 1],
+      scale: [1, 1, 2],
       opacity: 0,
     },
     bg: {
