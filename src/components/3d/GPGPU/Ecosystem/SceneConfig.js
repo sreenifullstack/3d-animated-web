@@ -26,6 +26,7 @@ const _CHAINS = "CHAINS002";
 const _TRADING = "TRADING002";
 const _INVESTMENT = "INVESTMENT002";
 const _WALLETS = "WALLETS003";
+const _PIGGY = "PIGGY";
 
 const _CHAIN_Logos = [
   { path: "chains/tron-trx-logo.svg", title: "Tron" },
@@ -163,6 +164,34 @@ options.investments = {
   config: createSceneConfig(SCENE_TYPES.DEFAULT, {
     obj: {
       position: [0, 0, 0],
+      rotation: [0, 0, 0],
+      scale: [1, 1, 1],
+      opacity: 0,
+    },
+
+    bg: {
+      ...colorsPallets[0],
+      uBlackAlpha: 0, // enable gradient on whole scene
+      particleSize: 0.5,
+      minAlpha: 0.04,
+      maxAlpha: 0.1,
+    },
+    postProcessing: {
+      direction: new THREE.Vector3(1, 0),
+      threshold: 0.74,
+      strength: 0.65,
+      radius: 1,
+    },
+  }),
+  nodelName: _INVESTMENT,
+  logos: _INVESTMENT_Logos,
+  order: 3,
+};
+
+options.PIGGY = {
+  config: createSceneConfig(SCENE_TYPES.DEFAULT, {
+    obj: {
+      position: [0, 0, 0],
       rotation: [0, Math.PI, 0],
       scale: [1, 1, 1],
       opacity: 0,
@@ -182,9 +211,9 @@ options.investments = {
       radius: 1,
     },
   }),
-  nodelName: _INVESTMENT,
+  nodelName: _PIGGY,
   logos: _INVESTMENT_Logos,
-  order: 3,
+  order: 4,
 };
 
 options.wallets = {
@@ -198,7 +227,7 @@ options.wallets = {
     bg: {
       ...colorsPallets[2],
       uBlackAlpha: 0, // enable gradient on whole scene
-      particleSize: 1,
+      particleSize: 1.2,
       minAlpha: 0.04,
       maxAlpha: 0.1,
     },
@@ -211,7 +240,7 @@ options.wallets = {
   }),
   nodelName: _WALLETS,
   logos: _WALLETS_Logos,
-  order: 4,
+  order: 5,
 };
 
 export default options;

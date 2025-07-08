@@ -190,6 +190,7 @@ const normalizeParticleProps = (props) => {
     minAlpha,
     maxAlpha,
     originalPositionTex,
+    originalGeometry,
     position: normalizedPosition,
     rotation: normalizedRotation,
     scale: normalizedScale,
@@ -211,6 +212,7 @@ const FboParticles = memo(
       minAlpha,
       maxAlpha,
       originalPositionTex,
+      originalGeometry,
       position,
       rotation,
       scale,
@@ -219,6 +221,7 @@ const FboParticles = memo(
       animationConfig,
     } = normalizedProps;
 
+    console.log({ originalGeometry });
     const particleMaterialRef = useRef();
     const particlesRef = useRef();
     const parentGroupRef = useRef();
@@ -464,7 +467,11 @@ const FboParticles = memo(
         <group ref={particlesRef}>
           <Bvh onPointerMove={handlePointerMove} dispose={null}>
             <mesh visible={false}>
-              <planeGeometry args={[1, 1, 1, 1]} />
+              {!originalGeometry && <planeGeometry args={[1, 1, 1, 1]} />}
+              {originalGeometry && (
+                <primitive object={originalGeometry} attach="geometry" />
+              )}
+
               <meshBasicMaterial wireframe transparent color="red" />
             </mesh>
           </Bvh>
@@ -579,7 +586,7 @@ const FboParticlesWrapper = memo(({ width = 128, ...props }) => {
   // Enhanced props extraction with fallbacks
   const getParticleProps = useMemo(() => {
     if (!config) return {};
-
+    console.log({ activeTexture: activeTexture?.geometry });
     return {
       size: 512,
       color1: config.bg?.color1,
