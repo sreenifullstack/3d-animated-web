@@ -172,13 +172,13 @@ options.investments = {
     bg: {
       ...colorsPallets[0],
       uBlackAlpha: 0, // enable gradient on whole scene
-      particleSize: 0.5,
+      particleSize: 1,
       minAlpha: 0.04,
-      maxAlpha: 0.1,
+      maxAlpha: 0.5,
     },
     postProcessing: {
       direction: new THREE.Vector3(1, 0),
-      threshold: 0.74,
+      threshold: 0.44,
       strength: 0.65,
       radius: 1,
     },
@@ -229,7 +229,7 @@ options.wallets = {
       uBlackAlpha: 0, // enable gradient on whole scene
       particleSize: 1.2,
       minAlpha: 0.04,
-      maxAlpha: 0.1,
+      maxAlpha: 0.5,
     },
     postProcessing: {
       direction: new THREE.Vector3(1, 0),
