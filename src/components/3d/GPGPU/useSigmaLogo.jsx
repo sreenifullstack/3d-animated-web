@@ -1,6 +1,6 @@
 "use client";
 const path = "/models/sigmaV5.glb";
-const logosPath = "/models/logos2.glb";
+const logosPath = "/models/logos3.glb";
 const textedPath = "/models/WALLETS.glb";
 import {
   sampleMesh,
@@ -35,12 +35,12 @@ export const useSigmaLogo = (size) => {
 
 const useLogoModels = () => {
   const model = useGLTF(logosPath);
-  console.log({ model });
   return useMemo(() => model, [model]);
 };
 
 export const useSampledLogo = (nodeName, size = 128) => {
   const model = useLogoModels();
+  console.log({ model });
 
   const sampled = useMemo(() => {
     if (!model?.nodes?.[nodeName]) return null;

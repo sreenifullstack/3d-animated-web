@@ -28,6 +28,7 @@ const OPTS = {
   Color1: 0x111111,
   Color2: 0x23f7dd,
   Color3: 0x222222,
+  Color4: 0x111111,
   minAlpha: 0.04,
   maxAlpha: 0.8,
   opacity: 1,
@@ -44,6 +45,7 @@ export const ParticlesMaterial = memo(
         color1 = OPTS.Color1, // These are expected to be color strings or hex numbers
         color2 = OPTS.Color2,
         color3 = OPTS.Color3,
+        color4 = OPTS.Color4,
         minAlpha = OPTS.minAlpha,
         maxAlpha = OPTS.maxAlpha,
         opacity = OPTS.opacity,
@@ -59,6 +61,7 @@ export const ParticlesMaterial = memo(
         uColor1: { value: new THREE.Color(color1) }, // Initializing THREE.Color objects here
         uColor2: { value: new THREE.Color(color2) },
         uColor3: { value: new THREE.Color(color3) },
+        uColor4: { value: new THREE.Color(color4) },
         uMinAlpha: { value: minAlpha },
         uMaxAlpha: { value: maxAlpha },
         uOpacity: { value: opacity },
@@ -110,6 +113,10 @@ export const ParticlesMaterial = memo(
               uniform: uniforms.uColor3.value,
               target: new THREE.Color(color3),
             },
+            {
+              uniform: uniforms.uColor4.value,
+              target: new THREE.Color(color4),
+            },
           ];
 
           const alphaProxy = {
@@ -158,6 +165,7 @@ export const ParticlesMaterial = memo(
             color1,
             color2,
             color3,
+            color4,
             minAlpha,
             maxAlpha,
             opacity,

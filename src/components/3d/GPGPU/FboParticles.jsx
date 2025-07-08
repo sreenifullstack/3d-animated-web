@@ -29,6 +29,7 @@ const DEFAULT_OPTIONS = {
   color1: 0x111111,
   color2: 0x23f7dd,
   color3: 0x222222,
+  color4: 0x111111,
   minAlpha: 0.4,
   maxAlpha: 0.8,
 };
@@ -145,6 +146,7 @@ const normalizeParticleProps = (props) => {
     color1 = DEFAULT_OPTIONS.color1,
     color2 = DEFAULT_OPTIONS.color2,
     color3 = DEFAULT_OPTIONS.color3,
+    color4 = DEFAULT_OPTIONS.color4,
     particleSize = DEFAULT_OPTIONS.particleSize,
     minAlpha = DEFAULT_OPTIONS.minAlpha,
     maxAlpha = DEFAULT_OPTIONS.maxAlpha,
@@ -166,6 +168,8 @@ const normalizeParticleProps = (props) => {
       typeof color2 === "string" ? new THREE.Color(color2).getHex() : color2,
     color3:
       typeof color3 === "string" ? new THREE.Color(color3).getHex() : color3,
+    color4:
+      typeof color4 === "string" ? new THREE.Color(color4).getHex() : color4,
   };
 
   // Validate and normalize arrays
@@ -208,6 +212,7 @@ const FboParticles = memo(
       color1,
       color2,
       color3,
+      color4,
       particleSize,
       minAlpha,
       maxAlpha,
@@ -221,7 +226,6 @@ const FboParticles = memo(
       animationConfig,
     } = normalizedProps;
 
-    console.log({ originalGeometry });
     const particleMaterialRef = useRef();
     const particlesRef = useRef();
     const parentGroupRef = useRef();
@@ -484,6 +488,8 @@ const FboParticles = memo(
               velocityTexture={computedTextures.velocity}
               color1={color1}
               color2={color2}
+              color3={color3}
+              color4={color4}
               size={particleSize}
               minAlpha={minAlpha}
               maxAlpha={maxAlpha}
@@ -586,12 +592,12 @@ const FboParticlesWrapper = memo(({ width = 128, ...props }) => {
   // Enhanced props extraction with fallbacks
   const getParticleProps = useMemo(() => {
     if (!config) return {};
-    console.log({ activeTexture: activeTexture?.geometry });
     return {
       size: 512,
       color1: config.bg?.color1,
       color2: config.bg?.color2,
       color3: config.bg?.color3,
+      color4: config.bg?.color4,
       particleSize: particleSize * (config.bg?.particleSize || 1),
       minAlpha: config.bg?.minAlpha,
       maxAlpha: config.bg?.maxAlpha,

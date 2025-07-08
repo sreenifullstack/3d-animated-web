@@ -4,26 +4,63 @@ const { createSceneConfig, SCENE_TYPES } = require("../SceneConfigManager");
 
 let colorsPallets = [
   // intro
-  { color1: "#54aba5", color2: "#274045", color3: "#375d54" },
+  {
+    color1: "#54aba5",
+    color2: "#274045",
+    color3: "#375d54",
+    color4: "#54aba5",
+  },
 
   // A
-  { color1: "#1c93b0", color2: "#22244e", color3: "#1d4e4e" },
+  {
+    color1: "#1c93b0",
+    color2: "#22244e",
+    color3: "#1d4e4e",
+    color4: "#1c93b0",
+  },
 
   // B
-  { color1: "#eaad8b", color2: "#4b1122", color3: "#000000" },
+  {
+    color1: "#eaad8b",
+    color2: "#4b1122",
+    color3: "#000000",
+    color4: "#eaad8b",
+  },
 
   // C
-  { color1: "#caabaa", color2: "#945a24", color3: "#614933" },
+  {
+    color1: "#caabaa",
+    color2: "#945a24",
+    color3: "#614933",
+    color4: "#caabaa",
+  },
 
   // D
-  { color1: "#4f335b", color2: "#187c7c", color3: "#623409" },
+  {
+    color1: "#4f335b",
+    color2: "#187c7c",
+    color3: "#623409",
+    color4: "#4f335b",
+  },
 
   // E
-  { color1: "#447274", color2: "#1b3729", color3: "#000000" },
+  {
+    color1: "#447274",
+    color2: "#1b3729",
+    color3: "#000000",
+    color4: "#447274",
+  },
+  // F
+  {
+    color1: "#eaad8b",
+    color2: "#4b1122",
+    color3: "#000000",
+    color4: "#54aba5", // unique particle color
+  },
 ];
 
 const _CHAINS = "CHAINS002";
-const _TRADING = "TRADING002";
+const _TRADING = "TRADING008";
 const _INVESTMENT = "INVESTMENT002";
 const _WALLETS = "WALLETS003";
 const _PIGGY = "PIGGY";
@@ -138,7 +175,7 @@ options.tradings = {
     obj: {
       position: [0, 0, 0],
       rotation: [0, 0, 0],
-      scale: [1, 1, 2],
+      scale: [1, 1, 1],
       opacity: 0,
     },
     bg: {
@@ -198,7 +235,7 @@ options.PIGGY = {
     },
 
     bg: {
-      ...colorsPallets[2],
+      ...colorsPallets[6],
       uBlackAlpha: 0, // enable gradient on whole scene
       particleSize: 0.5,
       minAlpha: 0.04,
