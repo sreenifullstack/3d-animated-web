@@ -169,7 +169,7 @@ export function Ecosystem({ id = "_Ecosystem" }) {
       const _state = particleState.current;
       if (_state.position && _state.scale) {
         _state.position.set(position.x, position.y, position.z);
-        const sValue = scale.x * 0.5;
+        const sValue = scale.x * 0.25;
         _state.scale.set(sValue, sValue, sValue);
       }
     },

@@ -22,10 +22,10 @@ let colorsPallets = [
   { color1: "#447274", color2: "#1b3729", color3: "#000000" },
 ];
 
-const _CHAINS = "CHAINS001";
-const _TRADING = "TRADING001";
-const _INVESTMENT = "INVESTMENT001";
-const _WALLETS = "WALLETS001";
+const _CHAINS = "CHAINS002";
+const _TRADING = "TRADING002";
+const _INVESTMENT = "INVESTMENT002";
+const _WALLETS = "WALLETS003";
 
 const _CHAIN_Logos = [
   { path: "chains/tron-trx-logo.svg", title: "Tron" },
@@ -107,10 +107,16 @@ const options = {};
 
 options.chains = {
   config: createSceneConfig(SCENE_TYPES.DEFAULT, {
+    obj: {
+      position: [0, 0, 0],
+      rotation: [Math.PI / 12, Math.PI / 12, Math.PI / 4],
+      scale: [1, 1, 1],
+      opacity: 0,
+    },
     bg: {
       ...colorsPallets[Math.floor(Math.random() * colorsPallets.length)],
       uBlackAlpha: 0, // enable gradient on whole scene
-      particleSize: 0.5,
+      particleSize: 1,
       minAlpha: 0.04,
       maxAlpha: 0.1,
     },
@@ -128,6 +134,12 @@ options.chains = {
 
 options.tradings = {
   config: createSceneConfig(SCENE_TYPES.DEFAULT, {
+    obj: {
+      position: [0, 0, 0],
+      rotation: [0, 0, 0],
+      scale: [1, 1, 1],
+      opacity: 0,
+    },
     bg: {
       ...colorsPallets[Math.floor(Math.random() * colorsPallets.length)],
       uBlackAlpha: 0, // enable gradient on whole scene
@@ -149,6 +161,13 @@ options.tradings = {
 
 options.investments = {
   config: createSceneConfig(SCENE_TYPES.DEFAULT, {
+    obj: {
+      position: [0, 0, 0],
+      rotation: [0, Math.PI, 0],
+      scale: [1, 1, 1],
+      opacity: 0,
+    },
+
     bg: {
       ...colorsPallets[Math.floor(Math.random() * colorsPallets.length)],
       uBlackAlpha: 0, // enable gradient on whole scene
@@ -170,10 +189,16 @@ options.investments = {
 
 options.wallets = {
   config: createSceneConfig(SCENE_TYPES.DEFAULT, {
+    obj: {
+      position: [0, 0, 0],
+      rotation: [0, Math.PI / 16, Math.PI / 16],
+      scale: [1, 1, 1],
+      opacity: 0,
+    },
     bg: {
       ...colorsPallets[Math.floor(Math.random() * colorsPallets.length)],
       uBlackAlpha: 0, // enable gradient on whole scene
-      particleSize: 0.5,
+      particleSize: 1,
       minAlpha: 0.04,
       maxAlpha: 0.1,
     },

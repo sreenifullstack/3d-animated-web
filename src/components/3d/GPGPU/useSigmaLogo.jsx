@@ -35,6 +35,7 @@ export const useSigmaLogo = (size) => {
 
 const useLogoModels = () => {
   const model = useGLTF(logosPath);
+  console.log({ model });
   return useMemo(() => model, [model]);
 };
 

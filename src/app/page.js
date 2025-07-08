@@ -219,37 +219,6 @@ function HeroComponent() {
   );
 }
 
-const ZscrollContent = forwardRef(({ activeState, type }, ref) => {
-  return (
-    <>
-      <div className="relative  border-2 border-red-100">
-        <div className=" sticky top-[50vh] left-0 z-10 flex h-screen w-full items-center justify-center  text-4xl text-amber-300">
-          Fixed
-          <div className="w-1/3 h-1/3 bg-red-200"> Trading </div>
-        </div>
-
-        <div className="flex flex-col items-center gap-4 pt-20">
-          <div className="flex h-screen w-full items-center justify-center text-4xl text-amber-300">
-            2
-          </div>
-
-          <div className="flex h-screen w-full items-center justify-center text-4xl text-amber-300">
-            3
-          </div>
-
-          <div className="flex h-screen w-full items-center justify-center text-4xl text-amber-300">
-            4
-          </div>
-
-          <div className="flex h-screen w-full items-center justify-center text-4xl text-amber-300">
-            5
-          </div>
-        </div>
-      </div>
-    </>
-  );
-});
-
 let colorsPallets = [
   // intro
   { color1: "#54aba5", color2: "#274045", color3: "#375d54" },
