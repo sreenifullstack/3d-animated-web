@@ -149,6 +149,7 @@ const normalizeParticleProps = (props) => {
     minAlpha = DEFAULT_OPTIONS.minAlpha,
     maxAlpha = DEFAULT_OPTIONS.maxAlpha,
     originalPositionTex = null,
+    originalGeometry = null,
     position = [0, 0, 0],
     rotation = [0, 0, 0],
     scale = [1, 1, 1],

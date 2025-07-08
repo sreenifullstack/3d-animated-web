@@ -114,7 +114,7 @@ options.chains = {
       opacity: 0,
     },
     bg: {
-      ...colorsPallets[Math.floor(Math.random() * colorsPallets.length)],
+      ...colorsPallets[2],
       uBlackAlpha: 0, // enable gradient on whole scene
       particleSize: 1,
       minAlpha: 0.04,
@@ -141,7 +141,7 @@ options.tradings = {
       opacity: 0,
     },
     bg: {
-      ...colorsPallets[Math.floor(Math.random() * colorsPallets.length)],
+      ...colorsPallets[2],
       uBlackAlpha: 0, // enable gradient on whole scene
       particleSize: 0.5,
       minAlpha: 0.04,
@@ -169,7 +169,7 @@ options.investments = {
     },
 
     bg: {
-      ...colorsPallets[Math.floor(Math.random() * colorsPallets.length)],
+      ...colorsPallets[2],
       uBlackAlpha: 0, // enable gradient on whole scene
       particleSize: 0.5,
       minAlpha: 0.04,
@@ -196,7 +196,7 @@ options.wallets = {
       opacity: 0,
     },
     bg: {
-      ...colorsPallets[Math.floor(Math.random() * colorsPallets.length)],
+      ...colorsPallets[2],
       uBlackAlpha: 0, // enable gradient on whole scene
       particleSize: 1,
       minAlpha: 0.04,
