@@ -15,10 +15,10 @@ export function SceneComponent({
   const { activeSceneId, setActiveSceneId, activeSceneHandler, particleState } =
     useTrackerContext();
   const el = useRef();
-  const isInView = useInView(el, { once: false, amount: 0.35 });
+  const isInView = useInView(el, { once: false, amount: 0.95 });
   useEffect(() => {
     if (!isInView) {
-      console.log(activeSceneId, id, "20");
+      // console.log(activeSceneId, id, "20");
       // If the scene is not in view and it's the active scene, reset the state
 
       if (activeSceneId === id) {

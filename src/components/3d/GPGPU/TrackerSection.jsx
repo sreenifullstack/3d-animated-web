@@ -34,7 +34,7 @@ export const TrackerProvider = ({ children }) => {
   const [count, setCount] = useState(512);
   const [config, setConfig] = useState(defaultConfig);
   const [activeTexture, setActiveTexture] = useState(null);
-  const [isIntro, setIntro] = useState(true);
+  const [isIntro, setIntro] = useState(!true);
   const [textures, setTextures] = useState(null);
   const [postProcessing, setPostProcessing] = useState(
     introConfig.postProcessing

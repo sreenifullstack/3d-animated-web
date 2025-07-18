@@ -67,7 +67,7 @@ const ScrollSection = forwardRef(
 
     const inView = useInView(el, {
       root: container,
-      amount: 0.8,
+      amount: 0.9,
     });
 
     const config = useMemo(() => options.config, [options]);

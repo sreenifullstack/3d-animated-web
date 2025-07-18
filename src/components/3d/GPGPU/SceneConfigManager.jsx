@@ -133,8 +133,8 @@ const DEFAULT_CONFIGS = {
     },
     postProcessing: {
       direction: new Vector3(1.5, 1),
-      threshold: 0.058,
-      strength: 1.2,
+      threshold: 0,
+      strength: 0,
       radius: 1,
     },
     mouse: {

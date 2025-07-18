@@ -54,6 +54,7 @@ import {
 import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { Ecosystem } from "@/components/3d/GPGPU/Ecosystem/Ecosystem";
+import { Rewards } from "@/components/3d/GPGPU/Rewards/RewardSection";
 // import { SceneComponent } from "@/components/3d/GPGPU/SceneComponent";
 
 export default function App() {
@@ -117,8 +118,7 @@ export default function App() {
               <section className="h-screen">
                 <h1>Basic &lt;fourth Section &gt; example</h1>
               </section>
-
-              <GradientSectionSwap />
+              <Rewards />
 
               <section className="h-screen">
                 <h1>Basic &lt;ScrollScene/&gt; example</h1>

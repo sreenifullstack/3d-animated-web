@@ -2,6 +2,9 @@
 const path = "/models/sigmaV5.glb";
 const logosPath = "/models/logos3.glb";
 const textedPath = "/models/WALLETS.glb";
+const treasurePath = "/models/treasure_chest.glb";
+const rewardsPath = "/models/rewards.glb";
+
 import {
   sampleMesh,
   sampleMixedMeshes,
@@ -38,8 +41,30 @@ const useLogoModels = () => {
   return useMemo(() => model, [model]);
 };
 
+const useTreasureMode = () => {
+  const model = useGLTF(treasurePath);
+  return useMemo(() => model, [model]);
+};
+
+export const useRewardsModel = () => {
+  const model = useGLTF(rewardsPath);
+  return useMemo(() => model, [model]);
+};
+
 export const useSampledLogo = (nodeName, size = 128) => {
   const model = useLogoModels();
+  console.log({ model });
+
+  const sampled = useMemo(() => {
+    if (!model?.nodes?.[nodeName]) return null;
+    return sampleMesh(model.nodes[nodeName], size, true);
+  }, [model, nodeName, size]);
+
+  return useMemo(() => ({ model, ...sampled }), [model, sampled]);
+};
+
+export const useTreasureLogo = (nodeName, size = 128) => {
+  const model = useTreasureMode();
   console.log({ model });
 
   const sampled = useMemo(() => {
@@ -231,5 +256,7 @@ export { useGridTexture, useSplaterTexture };
 useGLTF.preload(path);
 useGLTF.preload(logosPath);
 useGLTF.preload(textedPath);
+useGLTF.preload(treasurePath);
+useGLTF.preload(rewardsPath);
 
 useFont.preload("/fonts/helvetiker_regular.typeface.json");
