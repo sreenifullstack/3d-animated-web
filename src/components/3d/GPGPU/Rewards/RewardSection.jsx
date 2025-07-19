@@ -133,7 +133,7 @@ export function Rewards({ id = "_Rewards" }) {
               uOpacity: { value: 0 },
             });
             const tweenRef = useRef();
-
+            // window.model = model;
             useEffect(() => {
               if (!model) return;
 
@@ -159,6 +159,8 @@ export function Rewards({ id = "_Rewards" }) {
                     `
                     );
                   };
+                  // child.material.roughness = 0.25;
+                  // child.material.metalness = 0.53;
                   child.material.transparent = true;
                   child.material.needsUpdate = true;
                 }
