@@ -2,7 +2,7 @@
 const path = "/models/sigmaV5.glb";
 const logosPath = "/models/logos3.glb";
 const textedPath = "/models/WALLETS.glb";
-const treasurePath = "/models/treasure_chest.glb";
+const treasurePath = "/models/treasure_chest_1.glb";
 const rewardsPath = "/models/rewards.glb";
 
 import {
@@ -15,10 +15,6 @@ import { useState, useEffect } from "react";
 import { useMemo } from "react";
 import * as THREE from "three";
 import { mapLinear } from "three/src/math/MathUtils";
-import { TextGeometry } from "three/examples/jsm/geometries/TextGeometry";
-// import font from "three/examples/fonts/helvetiker_regular.typeface.json";
-
-import { FontLoader } from "three/examples/jsm/loaders/FontLoader";
 
 export const useSigmaLogo = (size) => {
   const model = useGLTF(path);

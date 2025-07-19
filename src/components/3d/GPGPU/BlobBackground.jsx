@@ -83,8 +83,6 @@ export const GradientBlobScene = memo(({ config = null, type = "default" }) => {
     uAlpha: { value: uAlpha },
   });
 
-  console.log(uAlpha, uBlackAlpha, "a");
-  // GSAP animation system for prop changes
   useGSAP(
     () => {
       const uniforms = uniformsRef.current;
@@ -211,8 +209,9 @@ export const GradientBlobScene = memo(({ config = null, type = "default" }) => {
 
     const ndc = fboNdcCoord?.current;
     if (!ndc) return;
-    uniformsRef.current.uBlackPosition.value.x = ndc.x;
-    uniformsRef.current.uBlackPosition.value.y = ndc.y;
+    uniformsRef.current.uBlackPosition.value.lerp(ndc, 0.1);
+    // uniformsRef.current.uBlackPosition.value.x = ndc.x;
+    // uniformsRef.current.uBlackPosition.value.y = ndc.y;
     // console.log(ndc);
   });
 

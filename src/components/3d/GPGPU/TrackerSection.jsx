@@ -22,7 +22,7 @@ const TrackerContext = createContext();
 
 export const TrackerProvider = ({ children }) => {
   const defaultConfig = useMemo(
-    () => createSceneConfig(SCENE_TYPES.DEFAULT),
+    () => createSceneConfig(SCENE_TYPES.SECTION),
     []
   );
   const introConfig = useMemo(() => createSceneConfig(SCENE_TYPES.INTRO), []);

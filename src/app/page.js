@@ -110,42 +110,9 @@ export default function App() {
           {(bind) => (
             <div {...bind}>
               <HeroComponent />
-              <section className="h-screen">
-                <h1>Secound Section</h1>
-              </section>
               <Ecosystem />
-
-              <section className="h-screen">
-                <h1>Basic &lt;fourth Section &gt; example</h1>
-              </section>
               <Rewards />
-
-              <section className="h-screen">
-                <h1>Basic &lt;ScrollScene/&gt; example</h1>
-              </section>
-
-              <GradientSectionSwap />
-              <section className="h-screen">
-                <h1>Basic &lt;ScrollScene/&gt; example</h1>
-              </section>
-
-              <section className="h-screen">
-                <h1>Basic &lt;ScrollScene/&gt; example</h1>
-              </section>
-              <GradientSectionSwap />
-              <section className="h-screen">
-                <h1>Basic &lt;ScrollScene/&gt; example</h1>
-              </section>
-              <GradientSectionSwap />
-
-              <section className="h-screen">
-                <h1>Basic &lt;ScrollScene/&gt; example</h1>
-              </section>
-
-              <section className="h-screen">
-                <h1>Basic &lt;ScrollScene/&gt; example</h1>
-              </section>
-
+              {/* <GradientSectionSwap /> */}
               <FooterComponent />
             </div>
           )}

@@ -27,7 +27,8 @@ export function SceneComponent({
       }
       return;
     }
-    // console.log(id);
+    // tmp prevent clash
+    activeSceneHandler("");
     activeSceneHandler({
       id,
       fboTextures, // fbotexture will act as fboState

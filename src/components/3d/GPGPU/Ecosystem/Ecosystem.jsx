@@ -74,6 +74,7 @@ const ScrollSection = forwardRef(
 
     useEffect(() => {
       if (!inView) return;
+      handleActiveScene("");
       handleActiveScene({
         fboTextures,
         config,
@@ -104,7 +105,7 @@ export function Ecosystem({ id = "_Ecosystem" }) {
 
   const meshRef = useRef();
   const rootRef = useRef(); // This ref will still exist but won't be used by the observer
-  const isInView = useInView(el, { once: false, amount: 0.35 });
+  const isInView = useInView(el, { once: false, amount: 0.5 });
 
   const { activeSceneId, setActiveSceneId, activeSceneHandler, particleState } =
     useTrackerContext();

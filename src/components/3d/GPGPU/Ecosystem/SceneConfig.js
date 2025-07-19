@@ -153,7 +153,7 @@ options.chains = {
     },
     bg: {
       ...colorsPallets[2],
-      uBlackAlpha: 0, // enable gradient on whole scene
+      uBlackAlpha: 0.5, // enable gradient on whole scene
       particleSize: 1,
       minAlpha: 0.04,
       maxAlpha: 0.1,
@@ -180,7 +180,7 @@ options.tradings = {
     },
     bg: {
       ...colorsPallets[2],
-      uBlackAlpha: 0, // enable gradient on whole scene
+      uBlackAlpha: 0.5, // enable gradient on whole scene
       particleSize: 0.5,
       minAlpha: 0.04,
       maxAlpha: 0.1,
@@ -208,7 +208,7 @@ options.investments = {
 
     bg: {
       ...colorsPallets[0],
-      uBlackAlpha: 0, // enable gradient on whole scene
+      uBlackAlpha: 0.5, // enable gradient on whole scene
       particleSize: 1,
       minAlpha: 0.04,
       maxAlpha: 0.5,
@@ -236,7 +236,7 @@ options.PIGGY = {
 
     bg: {
       ...colorsPallets[6],
-      uBlackAlpha: 0, // enable gradient on whole scene
+      uBlackAlpha: 0.5, // enable gradient on whole scene
       particleSize: 0.5,
       minAlpha: 0.04,
       maxAlpha: 0.1,
@@ -263,7 +263,7 @@ options.wallets = {
     },
     bg: {
       ...colorsPallets[2],
-      uBlackAlpha: 0, // enable gradient on whole scene
+      uBlackAlpha: 0.5, // enable gradient on whole scene
       particleSize: 1.2,
       minAlpha: 0.04,
       maxAlpha: 0.5,
