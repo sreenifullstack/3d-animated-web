@@ -1,5 +1,5 @@
 import * as THREE from "three";
-
+window.THREE = THREE;
 import {
   forwardRef,
   useMemo,
@@ -29,11 +29,17 @@ import { m, useInView } from "framer-motion";
 
 import { cn } from "@/lib/utils";
 import options from "./SceneConfig";
-import { Environment, useGLTF } from "@react-three/drei";
+import {
+  Environment,
+  shaderMaterial,
+  useAnimations,
+  useGLTF,
+} from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 
+let mixer;
 export function Rewards({ id = "_Rewards" }) {
   const el = useRef(); // Sticky header ref
 
@@ -129,11 +135,41 @@ export function Rewards({ id = "_Rewards" }) {
             const { activeSceneId } = useTrackerContext();
 
             const model = useRewardsModel();
+
+            const { actions, mixer } = useAnimations(
+              model.animations,
+              model.scene
+            );
+
+            const hasPlayed = useRef(false);
+
+            // useEffect(() => {
+            //   // Play all animations
+            //   if (actions) {
+            //     Object.values(actions).forEach((action) => {
+            //       action.reset();
+            //       action.setLoop(THREE.LoopOnce, 1);
+            //       action.clampWhenFinished = true;
+            //       action.fadeIn(0.5); // optional fade-in
+            //       action.play();
+            //       action.timeScale = action.getClip().duration / 2; // → 2 seconds playback
+            //     });
+            //   }
+            // }, [actions]);
+
+            // useFrame((_, delta) => {
+
+            // });
+
             const uniforms = useRef({
               uOpacity: { value: 0 },
+              uTime: { value: 0 },
+              uAmplitude: { value: 1.0 },
+              uFloatStrength: { value: 0.3 }, // How much it floats
+              uFloatSpeed: { value: 1 }, // Speed of floating
             });
             const tweenRef = useRef();
-            // window.model = model;
+            window.model = model;
             useEffect(() => {
               if (!model) return;
 
@@ -142,8 +178,50 @@ export function Rewards({ id = "_Rewards" }) {
                   child.material = new THREE.MeshPhysicalMaterial({
                     color: child.material.color,
                   });
+                  console.log(shaderMaterial.vertexShader);
                   child.material.onBeforeCompile = (shader) => {
                     Object.assign(shader.uniforms, uniforms.current);
+                    shader.uniforms.uFloatSpeed.value =
+                      (Math.random() - 0.5) * 2;
+
+                    shader.vertexShader =
+                      `
+                            uniform float uTime;
+                            uniform float uAmplitude;
+                            uniform float uFloatStrength;
+                            uniform float uFloatSpeed;
+                      ` + shader.vertexShader;
+
+                    shader.vertexShader = shader.vertexShader.replace(
+                      `#include <begin_vertex>`,
+                      `
+                        vec3 transformed = vec3( position );
+                         transformed.y += sin(uTime ) * 2. * uFloatSpeed;
+                         transformed.x += cos(uTime ) * 2. * uFloatSpeed;
+                         transformed.z += sin(uTime ) * 2. * uFloatSpeed;
+                        // Oscillating tilt (subtle rotation around X and Z axes)
+                        float angleX = sin(uTime*uFloatSpeed) * 0.2; 
+                        float angleZ = cos(uTime * uFloatSpeed) * 0.2;
+
+mat3 rotX = mat3(
+    1.0,         0.0,           0.0,
+    0.0, cos(angleX), -sin(angleX),
+    0.0, sin(angleX),  cos(angleX)
+);
+
+mat3 rotZ = mat3(
+    cos(angleZ), -sin(angleZ), 0.0,
+    sin(angleZ),  cos(angleZ), 0.0,
+    0.0,          0.0,         1.0
+);
+
+// Apply tilt
+transformed = rotZ * rotX * transformed;
+
+                        //  gl_Position = projectionMatrix * mvPosition;
+                          `
+                    );
+
                     shader.fragmentShader = shader.fragmentShader.replace(
                       `void main() {`,
                       `
@@ -161,30 +239,60 @@ export function Rewards({ id = "_Rewards" }) {
                   };
                   // child.material.roughness = 0.25;
                   // child.material.metalness = 0.53;
+                  child.material.side = THREE.DoubleSide;
                   child.material.transparent = true;
                   child.material.needsUpdate = true;
                 }
               });
             }, [model]);
 
-            useGSAP(() => {
+            useEffect(() => {
               const isInView = activeSceneId === "_Rewards";
-              tweenRef.current?.kill();
 
-              tweenRef.current = gsap.to(uniforms.current.uOpacity, {
-                value: isInView ? 1 : 0,
-                duration: isInView ? 1.5 : 0,
-                delay: isInView ? 1.5 : 0,
-              });
+              if (actions && isInView && !hasPlayed.current) {
+                Object.values(actions).forEach((action) => {
+                  action.reset();
+                  action.setLoop(THREE.LoopOnce, 1);
+                  action.clampWhenFinished = true;
+                  action.fadeIn(0.5); // optional fade-in
+                  action.play();
+                  action.timeScale = action.getClip().duration / 8; // → 2 seconds playback
+                });
+
+                hasPlayed.current = true;
+
+                tweenRef.current?.kill();
+                tweenRef.current = gsap.to(uniforms.current.uOpacity, {
+                  value: 1,
+                  duration: 5,
+                  delay: 0.5,
+                });
+              }
+
+              if (!isInView) {
+                hasPlayed.current = false;
+
+                tweenRef.current?.kill();
+                tweenRef.current = gsap.to(uniforms.current.uOpacity, {
+                  value: 0,
+                  duration: 0.5,
+                });
+              }
 
               return () => {
                 tweenRef.current?.kill();
                 tweenRef.current = null;
               };
-            }, [activeSceneId]);
+            }, [actions, activeSceneId]);
 
-            useFrame(({ pointer }) => {
+            useFrame(({ pointer, clock }, delta) => {
               if (!model?.scene) return;
+              if (mixer) mixer.update(delta);
+
+              if (uniforms.current) {
+                uniforms.current.uTime.value = clock.getElapsedTime();
+              }
+
               model.scene.rotation.x = lerp(
                 model.scene.rotation.x,
                 -pointer.y * 0.1,

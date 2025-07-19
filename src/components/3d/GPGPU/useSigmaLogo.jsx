@@ -3,7 +3,7 @@ const path = "/models/sigmaV5.glb";
 const logosPath = "/models/logos3.glb";
 const textedPath = "/models/WALLETS.glb";
 const treasurePath = "/models/treasure_chest_1.glb";
-const rewardsPath = "/models/rewards.glb";
+const rewardsPath = "/models/rewards_animated.glb";
 
 import {
   sampleMesh,
